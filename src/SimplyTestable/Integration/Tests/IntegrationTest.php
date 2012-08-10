@@ -94,7 +94,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         foreach ($this->environments as $environment => $path) {
             $this->runSymfonyCommand($environment, 'doctrine:database:drop --force');
             $this->runSymfonyCommand($environment, 'doctrine:database:create');
-            $this->runSymfonyCommand($environment, 'doctrine:database:migrate --no-interaction');
+            $this->runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction');
         }
     }    
     
