@@ -61,10 +61,10 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         }
     }    
 
-//    /**
-//     *
-//     * @depends testPrepareEnvironment 
-//     */
+    /**
+     *
+     * @depends testPrepareEnvironment 
+     */
     public function testNewJobRequest() { 
         $request = $this->getAuthorisedHttpRequest('http://ci.app.simplytestable.com/tests/http://webignition.net/start/');        
         $response = $this->getHttpClient()->getResponse($request);
@@ -78,8 +78,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(0, count($responseObject->tasks));
         
         self::$jobId = $responseObject->id;
-        
-        var_dump("testNewJobRequest", $responseObject->id, self::$jobId, "testNewJobRequest");
     }
     
     
@@ -88,8 +86,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
      */
     public function testPrepareNewJob() {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            var_dump("testPrepareNewJob", self::$jobId, "testPrepareNewJob");
-            //$this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $this->jobId);
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . self::$jobId);
         }
     }     
     
