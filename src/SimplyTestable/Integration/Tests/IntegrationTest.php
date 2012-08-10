@@ -51,9 +51,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
     private static $jobId;
   
 
-    public function testPrepareEnvironment() {
-        var_dump(getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE'));
-        
+    public function testPrepareEnvironment() {        
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
             $this->resetEnvironmentDatabases();
             $this->requestWorkerActivation();
