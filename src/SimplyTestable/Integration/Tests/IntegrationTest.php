@@ -16,7 +16,8 @@ class IntegrationTest extends BaseTest {
      *
      * @var stdClass
      */
-    private static $tasks;    
+    private static $tasks;   
+    
 
     public function testPrepareEnvironment() {        
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
@@ -71,10 +72,16 @@ class IntegrationTest extends BaseTest {
         self::$tasks = $responseObject->tasks;
     }
     
+    
+    /**
+     * @depends testGetTestStatus
+     */
     public function testAssignTasksToWorkers() {
-        foreach (self::$tasks as $task) {
-            var_dump($task);
-        }
+        var_dump(self::$tasks);
+        
+//        foreach (self::$tasks as $task) {
+//            var_dump($task);
+//        }
     }
     
     
