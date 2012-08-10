@@ -3,7 +3,20 @@
 use webignition\Http\Client\Client;
 
 
-class IntegrationTest extends BaseTest {  
+class IntegrationTest extends BaseTest {
+    
+    /**
+     *
+     * @var int
+     */
+    private static $jobId;
+    
+    
+    /**
+     *
+     * @var stdClass
+     */
+    private static $tasks;    
 
     public function testPrepareEnvironment() {        
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
@@ -54,6 +67,14 @@ class IntegrationTest extends BaseTest {
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
         $this->assertEquals('queued', $responseObject->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
+        
+        self::$tasks = $responseObject->tasks;
+    }
+    
+    public function testAssignTasksToWorkers() {
+        foreach (self::$tasks as $task) {
+            var_dump($task);
+        }
     }
     
     

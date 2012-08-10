@@ -47,13 +47,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     
     /**
      *
-     * @var int
-     */
-    protected static $jobId;
-    
-    
-    /**
-     *
      * @param string $environment
      * @param string $symfonyCommand 
      */
