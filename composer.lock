@@ -1,7 +1,24 @@
 {
-    "hash": "86e909c8c6d466f2410f86141ddb90a6",
+    "hash": "48cf768c4385d0da7a479200bb62d0f9",
     "packages": [
-
+        {
+            "package": "webignition/absolute-url-deriver",
+            "version": "dev-master",
+            "source-reference": "d84d6f74fe55429d4e19f7ede4d81fd3090738cc",
+            "commit-date": "1343344065"
+        },
+        {
+            "package": "webignition/http-client",
+            "version": "dev-master",
+            "source-reference": "17d70c76703029ea0b318c727e930b3c772a32a5",
+            "commit-date": "1344029348"
+        },
+        {
+            "package": "webignition/url",
+            "version": "dev-master",
+            "source-reference": "1.1",
+            "commit-date": "1342614896"
+        }
     ],
     "packages-dev": null,
     "aliases": [
