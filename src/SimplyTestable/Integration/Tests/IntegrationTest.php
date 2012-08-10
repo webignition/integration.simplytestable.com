@@ -79,9 +79,9 @@ class IntegrationTest extends BaseTest {
     public function testAssignTasksToWorkers() {
         var_dump(self::$tasks);
         
-//        foreach (self::$tasks as $task) {
-//            var_dump($task);
-//        }
+        foreach (self::$tasks as $task) {
+            var_dump($task);
+        }
     }
     
     
