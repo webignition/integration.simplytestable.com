@@ -48,23 +48,18 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
      *
      * @var int
      */
-    private $jobId;
-  
-
-    public function testPrepareEnvironment() {
-        var_dump(getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE'));
-        
+    private static $jobId;
+   
+    
+    public static function setUpBeforeClass() {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
             $this->resetEnvironmentDatabases();
             $this->requestWorkerActivation();
             $this->verifyWorkerActivation();            
-        }
-    }    
+        }  
+    }
 
-//    /**
-//     *
-//     * @depends testPrepareEnvironment 
-//     */
+
     public function testNewJobRequest() { 
         $request = $this->getAuthorisedHttpRequest('http://ci.app.simplytestable.com/tests/http://webignition.net/start/');        
         $response = $this->getHttpClient()->getResponse($request);
@@ -77,9 +72,10 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('new', $responseObject->state);
         $this->assertEquals(0, count($responseObject->tasks));
         
-        $this->jobId = $responseObject->id;
+                
+        self::$jobId = $responseObject->id;
         
-        var_dump("testNewJobRequest", $responseObject->id, $this->jobId, "testNewJobRequest");
+        var_dump("testNewJobRequest", $responseObject->id, self::$jobId, "testNewJobRequest");
     }
     
     
@@ -88,7 +84,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
      */
     public function testPrepareNewJob() {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            var_dump("testPrepareNewJob", $this->jobId, "testPrepareNewJob");
+            var_dump("testPrepareNewJob", self::$jobId, "testPrepareNewJob");
             //$this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $this->jobId);
         }
     }     
