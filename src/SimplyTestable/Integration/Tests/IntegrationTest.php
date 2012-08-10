@@ -76,11 +76,9 @@ class IntegrationTest extends BaseTest {
     /**
      * @depends testGetTestStatus
      */
-    public function testAssignTasksToWorkers() {
-        var_dump(self::$tasks);
-        
+    public function testAssignTasksToWorkers() {        
         foreach (self::$tasks as $task) {
-            var_dump($task);
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:assign ' . $task->id);
         }
     }
     
