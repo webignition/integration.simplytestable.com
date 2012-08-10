@@ -59,7 +59,7 @@ class IntegrationTest extends BaseTest {
     /**
      * @depends testPrepareTest
      */
-    public function testGetTestStatus() {
+    public function testGetPreAssignmentTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
         $response = $this->getHttpClient()->getResponse($request);
         
@@ -69,17 +69,47 @@ class IntegrationTest extends BaseTest {
         $this->assertEquals('queued', $responseObject->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
         
+        foreach ($responseObject->tasks as $task) {
+            $this->assertEquals('queued', $task->state);
+        }
+        
         self::$tasks = $responseObject->tasks;
     }
     
     
     /**
-     * @depends testGetTestStatus
+     * @depends testGetPreAssignmentTestStatus
      */
     public function testAssignTasksToWorkers() {        
         foreach (self::$tasks as $task) {
             $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:assign ' . $task->id);
         }
+    }
+    
+    
+    /**
+     * @depends testAssignTasksToWorkers
+     */
+    public function testGetPostAssignmentTestStatus() {
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        $responseObject = json_decode($response->getBody());
+        
+        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        $this->assertEquals('in-progress', $responseObject->state);
+        $this->assertTrue(count($responseObject->tasks) > 0);
+        $this->assertNotNull($responseObject->time_period);
+        $this->assertNotNull($responseObject->time_period->start_date_time);
+        
+        foreach ($responseObject->tasks as $task) {
+            $this->assertEquals('in-progress', $task->state);
+            $this->assertNotNull($task->worker);
+            $this->assertNotNull($task->time_period);
+            $this->assertNotNull($task->time_period->start_date_time);
+        }
+        
+        self::$tasks = $responseObject->tasks;        
     }
     
     
