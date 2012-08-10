@@ -1,0 +1,20 @@
+{
+    "name": "webignition/integration.simplytestable.com",
+    "description": "Integration test scripts for simplytestable.com",
+    "homepage": "https://github.com/webignition/integration.simplytestable.com",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Cram",
+            "email": "jon@webignition.net"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },    
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "minimum-stability":"dev"
+}
