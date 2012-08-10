@@ -8,6 +8,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     const HTTP_STATUS_OK = 200;
     const PUBLIC_USER_USERNAME = 'public';
     const PUBLIC_USER_PASSWORD = 'password';
+    const TEST_CANONICAL_URL = 'http://webignition.net/';
     
     /**
      * Map of environment name to enviroment local path
