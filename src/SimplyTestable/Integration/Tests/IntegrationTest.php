@@ -78,6 +78,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(0, count($responseObject->tasks));
         
         $this->jobId = $responseObject->id;
+        
+        var_dump("testNewJobRequest", $responseObject->id, $this->jobId, "testNewJobRequest");
     }
     
     
@@ -86,7 +88,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
      */
     public function testPrepareNewJob() {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $this->jobId);
+            var_dump("testPrepareNewJob", $this->jobId, "testPrepareNewJob");
+            //$this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $this->jobId);
         }
     }     
     
