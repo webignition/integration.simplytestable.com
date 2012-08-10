@@ -48,7 +48,7 @@ class IntegrationTest extends BaseTest {
     
     
     /**
-     * @depends testNewJobRequest
+     * @depends testStartTest
      */
     public function testPrepareTest() {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
@@ -57,7 +57,7 @@ class IntegrationTest extends BaseTest {
     }
     
     /**
-     * @depends testGetTestStatus
+     * @depends testPrepareTest
      */
     public function testGetTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
