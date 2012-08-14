@@ -55,3 +55,27 @@ The presentation of the adventure in the unit tests is a little dry. Here's what
   - Assert that each task has a status of 'in-progress' and has a start date
 <br />
 </div>
+
+7. <div><strong>Run tasks on workers</strong>
+  - Run each task
+<br />
+</div>
+
+8.  <div><strong>Report task completion</strong>
+  - Have the relevant worker for each task report back to the core application that the task is complete
+<br />
+</div>
+
+9.  <div><strong>Report test completed</strong>
+  - Mark the test as being completed
+<br />
+</div>
+
+10.  <div><strong>Check the test job status after being completed</strong>
+  - Assert that the job that was previously 'in-progress' is now 'complete'
+  - Assert that the job has a start date
+  - Assert that the job has a end date
+  - Assert that the job has a non-zero-length collection of tasks
+  - Assert that each task has a status of 'completed', has a start date and has an end date
+<br />
+</div>
