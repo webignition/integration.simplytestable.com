@@ -21,6 +21,7 @@ class IntegrationTest extends BaseTest {
 
     public function testPrepareEnvironment() {        
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
+            $this->clearEnvironmentLogs();
             $this->resetEnvironmentDatabases();
             $this->requestWorkerActivation();
             $this->verifyWorkerActivation();            
@@ -110,6 +111,13 @@ class IntegrationTest extends BaseTest {
         }
         
         self::$tasks = $responseObject->tasks;        
+    }
+    
+    
+    private function clearEnvironmentLogs() {
+        foreach ($this->environments as $environment => $path) {
+            $this->runCommand($environment, 'rm -Rf app/logs/*.log');
+        }        
     }
     
     
