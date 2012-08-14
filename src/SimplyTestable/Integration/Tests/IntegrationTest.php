@@ -142,19 +142,29 @@ class IntegrationTest extends BaseTest {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
         }        
     }    
-      
+    
     
     /**
      * @depends testReportTaskCompletion
+     */
+    public function testMarkTestCompleted() {        
+        foreach (self::$tasks as $task) {
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:markcompleted ' . $task->id);
+        }
+    }    
+      
+    
+    /**
+     * @depends testMarkTestCompleted
      */    
-    public function testGetPostPerformTestStatus() {
+    public function testGetPostCompleteTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
         $response = $this->getHttpClient()->getResponse($request);
         
         $responseObject = json_decode($response->getBody());
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        //$this->assertEquals('completed', $responseObject->state);
+        $this->assertEquals('completed', $responseObject->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
         $this->assertNotNull($responseObject->time_period);
         $this->assertNotNull($responseObject->time_period->start_date_time);
