@@ -17,7 +17,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      */
     protected $environments = array(
         'ci.app.simplytestable.com' => '/www/ci.app.simplytestable.com',
-        'hydrogen.ci.worker.simplytestable.com' => '/www/hydrogen.ci.worker.simplytestable.com'
+        'hydrogen.ci.worker.simplytestable.com' => '/www/hydrogen.ci.worker.simplytestable.com',
+        'lithium.ci.worker.simplytestable.com' => '/www/lithium.ci.worker.simplytestable.com'
     );
     
     
@@ -27,7 +28,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @var array
      */
     protected $workers = array(
-        'hydrogen.ci.worker.simplytestable.com'
+        'hydrogen.ci.worker.simplytestable.com',
+        'lithium.ci.worker.simplytestable.com'
     );
     
     
