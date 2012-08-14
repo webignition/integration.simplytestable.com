@@ -127,10 +127,25 @@ class IntegrationTest extends BaseTest {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
         }        
     }
+    
+
+    /**
+     * @depends testGetPostAssignmentTestStatus
+     */
+    public function testReportTaskCompletion() {
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        $responseObject = json_decode($response->getBody());
+        
+        foreach ($responseObject->tasks as $task) {
+            $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+        }        
+    }    
       
     
     /**
-     * @depends testGetPostAssignmentTestStatus
+     * @depends testReportTaskCompletion
      */    
     public function testGetPostPerformTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
