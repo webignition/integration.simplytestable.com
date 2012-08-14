@@ -104,10 +104,11 @@ class IntegrationTest extends BaseTest {
         $this->assertNotNull($responseObject->time_period->start_date_time);
         
         foreach ($responseObject->tasks as $task) {
-            $this->assertEquals('in-progress', $task->state);
+            $this->assertEquals('in-progress', $task->state);            
             $this->assertNotNull($task->worker);
             $this->assertNotNull($task->time_period);
             $this->assertNotNull($task->time_period->start_date_time);
+            $this->assertNotNull($task->remote_id);
         }
         
         self::$tasks = $responseObject->tasks;        
@@ -126,7 +127,33 @@ class IntegrationTest extends BaseTest {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
         }        
     }
-            
+      
+    
+    /**
+     * @depends testGetPostAssignmentTestStatus
+     */    
+    public function testGetPostPerformTestStatus() {
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        $responseObject = json_decode($response->getBody());
+        
+        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        //$this->assertEquals('completed', $responseObject->state);
+        $this->assertTrue(count($responseObject->tasks) > 0);
+        $this->assertNotNull($responseObject->time_period);
+        $this->assertNotNull($responseObject->time_period->start_date_time);
+        
+        foreach ($responseObject->tasks as $task) {
+            $this->assertEquals('completed', $task->state);
+            $this->assertEquals('', $task->worker);
+            $this->assertNotNull($task->time_period);
+            $this->assertNotNull($task->time_period->start_date_time);
+            $this->assertNotNull($task->time_period->end_date_time);
+        }
+        
+        self::$tasks = $responseObject->tasks;        
+    }
     
     
     private function clearEnvironmentLogs() {
