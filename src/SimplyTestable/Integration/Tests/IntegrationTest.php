@@ -130,7 +130,7 @@ class IntegrationTest extends BaseTest {
     
 
     /**
-     * @depends testGetPostAssignmentTestStatus
+     * @depends testPerformTasks
      */
     public function testReportTaskCompletion() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
@@ -147,15 +147,13 @@ class IntegrationTest extends BaseTest {
     /**
      * @depends testReportTaskCompletion
      */
-    public function testMarkTestCompleted() {        
-        foreach (self::$tasks as $task) {
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:markcompleted ' . $task->id);
-        }
+    public function testMarkJobCompleted() {        
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:markcompleted ' . $task->id);
     }    
       
     
     /**
-     * @depends testMarkTestCompleted
+     * @depends testMarkJobCompleted
      */    
     public function testGetPostCompleteTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
