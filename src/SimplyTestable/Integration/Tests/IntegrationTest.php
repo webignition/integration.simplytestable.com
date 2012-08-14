@@ -113,6 +113,21 @@ class IntegrationTest extends BaseTest {
         self::$tasks = $responseObject->tasks;        
     }
     
+    /**
+     * @depends testGetPostAssignmentTestStatus
+     */
+    public function testPerformTasks() {
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        $responseObject = json_decode($response->getBody());
+        
+        foreach ($responseObject->tasks as $task) {
+            $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+        }        
+    }
+            
+    
     
     private function clearEnvironmentLogs() {
         foreach ($this->environments as $environment => $path) {
