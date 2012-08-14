@@ -148,7 +148,7 @@ class IntegrationTest extends BaseTest {
      * @depends testReportTaskCompletion
      */
     public function testMarkJobCompleted() {        
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:markcompleted ' . $task->id);
+        $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:markcompleted ' . self::$jobId);
     }    
       
     
