@@ -11,8 +11,24 @@ class ResetTest extends BaseTest {
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
             $this->clearEnvironmentLogs();
             $this->resetEnvironmentDatabases();          
+            $this->requestWorkerActivation();
+            $this->verifyWorkerActivation();            
         }
     }
+    
+    
+    private function requestWorkerActivation() {
+        foreach ($this->workers as $worker) {
+            $this->runSymfonyCommand($worker, 'simplytestable:worker:activate');
+        }
+    }
+    
+    
+    private function verifyWorkerActivation() {
+        foreach ($this->workers as $workerIndex => $worker) {
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:worker:activate:verify ' . ($workerIndex + 1));
+        }        
+    }    
     
     
     private function clearEnvironmentLogs() {

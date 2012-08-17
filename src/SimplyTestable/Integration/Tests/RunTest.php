@@ -18,20 +18,8 @@ class RunTest extends BaseTest {
      *
      * @var stdClass
      */
-    private static $tasks;   
-    
+    private static $tasks;
 
-    public function testPrepareEnvironment() {        
-        if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            $this->requestWorkerActivation();
-            $this->verifyWorkerActivation();            
-        }
-    }    
-
-    /**
-     *
-     * @depends testPrepareEnvironment 
-     */
     public function testStartTest() { 
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $response = $this->getHttpClient()->getResponse($request);
@@ -176,19 +164,7 @@ class RunTest extends BaseTest {
         }
         
         self::$tasks = $responseObject->tasks;        
-    }
+    }   
     
-    
-    private function requestWorkerActivation() {
-        foreach ($this->workers as $worker) {
-            $this->runSymfonyCommand($worker, 'simplytestable:worker:activate');
-        }
-    }
-    
-    
-    private function verifyWorkerActivation() {
-        foreach ($this->workers as $workerIndex => $worker) {
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:worker:activate:verify ' . ($workerIndex + 1));
-        }        
-    }      
+      
 }
