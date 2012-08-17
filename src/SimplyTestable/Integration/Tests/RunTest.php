@@ -3,7 +3,7 @@
 use webignition\Http\Client\Client;
 
 
-class IntegrationTest extends BaseTest {
+class RunTest extends BaseTest {
     
     /**
      *
@@ -21,8 +21,6 @@ class IntegrationTest extends BaseTest {
 
     public function testPrepareEnvironment() {        
         if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            $this->clearEnvironmentLogs();
-            $this->resetEnvironmentDatabases();
             $this->requestWorkerActivation();
             $this->verifyWorkerActivation();            
         }
