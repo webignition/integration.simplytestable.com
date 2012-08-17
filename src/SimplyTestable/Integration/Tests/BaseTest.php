@@ -1,5 +1,7 @@
 <?php
 
+namespace SimplyTestable\Integration\Tests;
+
 use webignition\Http\Client\Client;
 
 
