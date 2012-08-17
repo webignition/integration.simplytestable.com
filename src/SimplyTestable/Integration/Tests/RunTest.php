@@ -179,22 +179,6 @@ class RunTest extends BaseTest {
     }
     
     
-    private function clearEnvironmentLogs() {
-        foreach ($this->environments as $environment => $path) {
-            $this->runCommand($environment, 'rm -Rf app/logs/*.log');
-        }        
-    }
-    
-    
-    private function resetEnvironmentDatabases() {
-        foreach ($this->environments as $environment => $path) {
-            $this->runSymfonyCommand($environment, 'doctrine:database:drop --force');
-            $this->runSymfonyCommand($environment, 'doctrine:database:create');
-            $this->runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');
-        }
-    }    
-    
-    
     private function requestWorkerActivation() {
         foreach ($this->workers as $worker) {
             $this->runSymfonyCommand($worker, 'simplytestable:worker:activate');
