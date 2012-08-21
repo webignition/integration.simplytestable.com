@@ -144,21 +144,22 @@ class RunTest extends BaseTest {
      * @depends testMarkJobCompleted
      */
     public function testStartAndCancelTest() { 
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
-        $response = $this->getHttpClient()->getResponse($request);
-        $responseObject = json_decode($response->getBody());
-        $job_id = $responseObject->id;
+        $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
+        $startResponse = $this->getHttpClient()->getResponse($startRequest);
+        $startResponseObject = json_decode($startResponse->getBody());
+        $job_id = $startResponseObject->id;
         
-        //$request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');  
+        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
+        $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
         
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
-        $response = $this->getHttpClient()->getResponse($request);
-        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
+        $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());
         
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
-        
-        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('cancelled', $responseObject->state);    
+        $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
+        $this->assertEquals('cancelled', $postCancelResponseObject->state);    
+        $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
+        $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);  
     }
       
     
