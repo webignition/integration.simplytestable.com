@@ -137,7 +137,29 @@ class RunTest extends BaseTest {
      */
     public function testMarkJobCompleted() {        
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:markcompleted ' . self::$jobId);
-    }    
+    }
+    
+    
+    /**
+     * @depends testMarkJobCompleted
+     */
+    public function testStartAndCancelTest() { 
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
+        $response = $this->getHttpClient()->getResponse($request);
+        $responseObject = json_decode($response->getBody());
+        $job_id = $responseObject->id;
+        
+        //$request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');  
+        
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
+        $response = $this->getHttpClient()->getResponse($request);
+        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        
+        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        $this->assertEquals('cancelled', $responseObject->state);    
+    }
       
     
     /**
