@@ -199,24 +199,39 @@ class RunTest extends BaseTest {
         // Prepare
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $job_id);
         
-        // Cancel
+        // Cancel Job
         $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
-        $this->getHttpClient()->getResponse($cancelRequest);        
+        $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
         
         // Verify
         $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
         $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());        
         
+        $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
+        $this->assertEquals('cancelled', $postCancelResponseObject->state);    
+        $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
+        $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);         
+        
         $this->assertTrue(count($postCancelResponseObject->tasks) > 0);        
+        
+        // Cancel tasks        
+        foreach ($postCancelResponseObject->tasks as $task) {
+            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:cancel ' . $task->id);         
+        }
+        
+        // Verify
+        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
+        $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());          
         
         foreach ($postCancelResponseObject->tasks as $task) {
             $this->assertEquals('cancelled', $task->state);
             $this->assertEquals('', $task->worker);
             $this->assertNotNull($task->time_period);
             $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertNotNull($task->time_period->end_date_time);            
-        }
+            $this->assertNotNull($task->time_period->end_date_time);
+        }        
     }
       
 }
