@@ -129,19 +129,11 @@ class RunTest extends BaseTest {
         foreach ($responseObject->tasks as $task) {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
         }        
-    }    
-    
-    
-    /**
-     * @depends testReportTaskCompletion
-     */
-    public function testMarkJobCompleted() {        
-        $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:markcompleted ' . self::$jobId);
     }
     
     
     /**
-     * @depends testMarkJobCompleted
+     * @depends testPerformTasks
      */    
     public function testGetPostCompleteTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
