@@ -133,7 +133,7 @@ class RunTest extends BaseTest {
     
     
     /**
-     * @depends testPerformTasks
+     * @depends testReportTaskCompletion
      */    
     public function testGetPostCompleteTestStatus() {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
