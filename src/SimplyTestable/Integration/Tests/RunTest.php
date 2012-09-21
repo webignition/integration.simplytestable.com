@@ -12,13 +12,7 @@ class RunTest extends BaseTest {
      * @var int
      */
     private static $jobId;
-    
-    
-    /**
-     *
-     * @var stdClass
-     */
-    private static $tasks;
+
 
     public function testStartTest() { 
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
@@ -55,6 +49,8 @@ class RunTest extends BaseTest {
         
         $jobResponseObject = json_decode($jobResponse->getBody());
 
+var_dump($jobResponseObject);
+
         $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
         $this->assertInternalType('integer', $jobResponseObject->id);
         $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
@@ -77,8 +73,12 @@ class RunTest extends BaseTest {
             $this->assertEquals('', $task->worker);
             $this->assertNotEquals('', $task->type);
         }
-        
-        self::$tasks = $tasksResponseObject;
+
+exit();
+
+            $this->assertNotNull($task->time_period);
+            $this->assertNotNull($task->time_period->start_date_time);
+            $this->assertNotNull($task->time_period->end_date_time);
     }
     
     
@@ -86,7 +86,12 @@ class RunTest extends BaseTest {
      * @depends testGetPreAssignmentTestStatus
      */
     public function testAssignTasksToWorkers() {        
-        foreach (self::$tasks as $task) {
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
+        
+        $tasksResponseObject = json_decode($tasksResponse->getBody());  
+
+        foreach ($tasksResponseObject as $task) {
             $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:assign ' . $task->id);
         }
     }
@@ -129,9 +134,14 @@ class RunTest extends BaseTest {
      * @depends testGetPostAssignmentTestStatus
      */
     public function testPerformTasks() {        
-        foreach (self::$tasks as $task) {
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
+        
+        $tasksResponseObject = json_decode($tasksResponse->getBody());  
+
+        foreach ($tasksResponseObject as $task) {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
-        }        
+        }    
     }
     
 
@@ -139,14 +149,14 @@ class RunTest extends BaseTest {
      * @depends testPerformTasks
      */
     public function testReportTaskCompletion() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
-        $response = $this->getHttpClient()->getResponse($request);
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        $responseObject = json_decode($response->getBody());
+        $tasksResponseObject = json_decode($tasksResponse->getBody());
         
-        foreach ($responseObject->tasks as $task) {
+        foreach ($tasksResponseObject as $task) {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
-        }        
+        }     
     }
     
     
@@ -154,26 +164,36 @@ class RunTest extends BaseTest {
      * @depends testReportTaskCompletion
      */    
     public function testGetPostCompleteTestStatus() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
-        $response = $this->getHttpClient()->getResponse($request);
+        $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
+        $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
         
-        $responseObject = json_decode($response->getBody());
+        $jobResponseObject = json_decode($jobResponse->getBody());
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
+        $this->assertInternalType('integer', $jobResponseObject->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $jobResponseObject->website);
+        $this->assertEquals('completed', $jobResponseObject->state);
+        $this->assertGreaterThan(0, $jobResponseObject->url_count);
+        $this->assertGreaterThan(0, $jobResponseObject->task_count);       
+
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('completed', $responseObject->job->state);
-        $this->assertTrue(count($responseObject->tasks) > 0);
-        $this->assertNotNull($responseObject->job->time_period);
-        $this->assertNotNull($responseObject->job->time_period->start_date_time);
-        
-        foreach ($responseObject->tasks as $task) {
+        $tasksResponseObject = json_decode($tasksResponse->getBody());        
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $tasksResponse->getResponseCode());
+
+        foreach ($tasksResponseObject as $task) {
+            $this->assertGreaterThan(0, $task->id);
+            $this->assertNotNull($task->url);
             $this->assertEquals('completed', $task->state);
             $this->assertEquals('', $task->worker);
-            $this->assertNotNull($task->time_period);
-            $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertNotNull($task->time_period->end_date_time);
-        }
-        
-        self::$tasks = $responseObject->tasks;        
+            $this->assertNotEquals('', $task->type);
+        }  
+
+
+exit();         
     }     
     
     /**
