@@ -143,8 +143,8 @@ class RunTest extends BaseTest {
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
         $this->assertEquals('completed', $responseObject->job->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
-        $this->assertNotNull($responseObject->time_period);
-        $this->assertNotNull($responseObject->time_period->start_date_time);
+        $this->assertNotNull($responseObject->job->time_period);
+        $this->assertNotNull($responseObject->job->time_period->start_date_time);
         
         foreach ($responseObject->tasks as $task) {
             $this->assertEquals('completed', $task->state);
@@ -201,8 +201,8 @@ class RunTest extends BaseTest {
         
         $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
         $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
-        $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
-        $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);         
+        $this->assertNotNull($postCancelResponseObject->job->time_period->start_date_time);
+        $this->assertNotNull($postCancelResponseObject->job->time_period->end_date_time);         
         
         $this->assertTrue(count($postCancelResponseObject->tasks) > 0);        
         
