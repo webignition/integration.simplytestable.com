@@ -175,8 +175,8 @@ class RunTest extends BaseTest {
         
         $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
         $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
-        $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
-        $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);  
+        $this->assertNotNull($postCancelResponseObject->job->time_period->start_date_time);
+        $this->assertNotNull($postCancelResponseObject->job->time_period->end_date_time);  
     }
     
     
