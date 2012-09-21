@@ -24,15 +24,14 @@ class RunTest extends BaseTest {
         $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $response = $this->getHttpClient()->getResponse($request);
         
-        $responseObject = json_decode($response->getBody());
+        $responseObject = json_decode($response->getBody());        
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
         $this->assertEquals(self::PUBLIC_USER_USERNAME, $responseObject->user);
         $this->assertEquals(self::TEST_CANONICAL_URL, $responseObject->website);
         $this->assertEquals('new', $responseObject->state);
-        $this->assertEquals(0, count($responseObject->tasks));
         
-        self::$jobId = $responseObject->id;
+        self::$jobId = $responseObject->job->id;
     }
     
     
@@ -55,7 +54,7 @@ class RunTest extends BaseTest {
         $responseObject = json_decode($response->getBody());
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('queued', $responseObject->state);
+        $this->assertEquals('queued', $responseObject->job->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
         
         foreach ($responseObject->tasks as $task) {
@@ -86,10 +85,10 @@ class RunTest extends BaseTest {
         $responseObject = json_decode($response->getBody());
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('in-progress', $responseObject->state);
+        $this->assertEquals('in-progress', $responseObject->job->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
-        $this->assertNotNull($responseObject->time_period);
-        $this->assertNotNull($responseObject->time_period->start_date_time);
+        $this->assertNotNull($responseObject->job->time_period);
+        $this->assertNotNull($responseObject->job->time_period->start_date_time);
         
         foreach ($responseObject->tasks as $task) {
             $this->assertEquals('in-progress', $task->state);            
@@ -142,7 +141,7 @@ class RunTest extends BaseTest {
         $responseObject = json_decode($response->getBody());
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('completed', $responseObject->state);
+        $this->assertEquals('completed', $responseObject->job->state);
         $this->assertTrue(count($responseObject->tasks) > 0);
         $this->assertNotNull($responseObject->time_period);
         $this->assertNotNull($responseObject->time_period->start_date_time);
@@ -165,7 +164,7 @@ class RunTest extends BaseTest {
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
         $startResponseObject = json_decode($startResponse->getBody());
-        $job_id = $startResponseObject->id;
+        $job_id = $startResponseObject->job->id;
         
         $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
@@ -175,7 +174,7 @@ class RunTest extends BaseTest {
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());
         
         $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
-        $this->assertEquals('cancelled', $postCancelResponseObject->state);    
+        $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
         $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
         $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);  
     }
@@ -186,7 +185,7 @@ class RunTest extends BaseTest {
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);        
         $startResponseObject = json_decode($startResponse->getBody());
-        $job_id = $startResponseObject->id;
+        $job_id = $startResponseObject->job->id;
         
         // Prepare
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $job_id);
@@ -201,7 +200,7 @@ class RunTest extends BaseTest {
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());        
         
         $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
-        $this->assertEquals('cancelled', $postCancelResponseObject->state);    
+        $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
         $this->assertNotNull($postCancelResponseObject->time_period->start_date_time);
         $this->assertNotNull($postCancelResponseObject->time_period->end_date_time);         
         
