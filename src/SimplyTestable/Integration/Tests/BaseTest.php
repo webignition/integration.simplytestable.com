@@ -90,6 +90,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     protected function getHttpClient() {
         if (is_null($this->httpClient)) {
             $this->httpClient = new \webignition\Http\Client\Client();
+            $this->httpClient->redirectHandler()->enable();
         }
         
         return $this->httpClient;

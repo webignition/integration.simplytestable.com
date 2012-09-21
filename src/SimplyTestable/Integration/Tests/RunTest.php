@@ -21,15 +21,19 @@ class RunTest extends BaseTest {
     private static $tasks;
 
     public function testStartTest() { 
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
+        $this->getHttpClient()->redirectHandler()->enable();
         $response = $this->getHttpClient()->getResponse($request);
         
-        $responseObject = json_decode($response->getBody());        
+        $responseObject = json_decode($response->getBody()); 
         
         $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
+        $this->assertInternalType('integer', $responseObject->id);
         $this->assertEquals(self::PUBLIC_USER_USERNAME, $responseObject->user);
         $this->assertEquals(self::TEST_CANONICAL_URL, $responseObject->website);
         $this->assertEquals('new', $responseObject->state);
+        $this->assertEquals(0, $responseObject->url_count);
+        $this->assertEquals(0, $responseObject->task_count);
         
         self::$jobId = $responseObject->id;
     }
@@ -39,29 +43,42 @@ class RunTest extends BaseTest {
      * @depends testStartTest
      */
     public function testPrepareTest() {
-        if (getenv('SIMPLYTESTABLE_INTEGRATION_PREPARE')) {
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . self::$jobId);
-        }
+        $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . self::$jobId);
     }
     
     /**
      * @depends testPrepareTest
      */
     public function testGetPreAssignmentTestStatus() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
-        $response = $this->getHttpClient()->getResponse($request);
+        $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
+        $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
         
-        $responseObject = json_decode($response->getBody());
+        $jobResponseObject = json_decode($jobResponse->getBody());
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
+        $this->assertInternalType('integer', $jobResponseObject->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $jobResponseObject->website);
+        $this->assertEquals('queued', $jobResponseObject->state);
+        $this->assertGreaterThan(0, $jobResponseObject->url_count);
+        $this->assertGreaterThan(0, $jobResponseObject->task_count);
+
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('queued', $responseObject->job->state);
-        $this->assertTrue(count($responseObject->tasks) > 0);
-        
-        foreach ($responseObject->tasks as $task) {
+        $tasksResponseObject = json_decode($tasksResponse->getBody());        
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $tasksResponse->getResponseCode());
+
+        foreach ($tasksResponseObject as $task) {
+            $this->assertGreaterThan(0, $task->id);
+            $this->assertNotNull($task->url);
             $this->assertEquals('queued', $task->state);
+            $this->assertEquals('', $task->worker);
+            $this->assertNotEquals('', $task->type);
         }
         
-        self::$tasks = $responseObject->tasks;
+        self::$tasks = $tasksResponseObject;
     }
     
     
@@ -79,38 +96,40 @@ class RunTest extends BaseTest {
      * @depends testAssignTasksToWorkers
      */
     public function testGetPostAssignmentTestStatus() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
-        $response = $this->getHttpClient()->getResponse($request);
+        $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
+        $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
         
-        $responseObject = json_decode($response->getBody());
+        $jobResponseObject = json_decode($jobResponse->getBody());
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
+        $this->assertInternalType('integer', $jobResponseObject->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $jobResponseObject->website);
+        $this->assertEquals('in-progress', $jobResponseObject->state);
+        $this->assertGreaterThan(0, $jobResponseObject->url_count);
+        $this->assertGreaterThan(0, $jobResponseObject->task_count);       
+
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        $this->assertEquals(self::HTTP_STATUS_OK, $response->getResponseCode());
-        $this->assertEquals('in-progress', $responseObject->job->state);
-        $this->assertTrue(count($responseObject->tasks) > 0);
-        $this->assertNotNull($responseObject->job->time_period);
-        $this->assertNotNull($responseObject->job->time_period->start_date_time);
-        
-        foreach ($responseObject->tasks as $task) {
-            $this->assertEquals('in-progress', $task->state);            
-            $this->assertNotNull($task->worker);
-            $this->assertNotNull($task->time_period);
-            $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertNotNull($task->remote_id);
+        $tasksResponseObject = json_decode($tasksResponse->getBody());        
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $tasksResponse->getResponseCode());
+
+        foreach ($tasksResponseObject as $task) {
+            $this->assertGreaterThan(0, $task->id);
+            $this->assertNotNull($task->url);
+            $this->assertEquals('in-progress', $task->state);
+            $this->assertNotEquals('', $task->worker);
+            $this->assertNotEquals('', $task->type);
         }
-        
-        self::$tasks = $responseObject->tasks;        
     }
     
     /**
      * @depends testGetPostAssignmentTestStatus
      */
-    public function testPerformTasks() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
-        $response = $this->getHttpClient()->getResponse($request);
-        
-        $responseObject = json_decode($response->getBody());
-        
-        foreach ($responseObject->tasks as $task) {
+    public function testPerformTasks() {        
+        foreach (self::$tasks as $task) {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
         }        
     }
@@ -120,7 +139,7 @@ class RunTest extends BaseTest {
      * @depends testPerformTasks
      */
     public function testReportTaskCompletion() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
         $response = $this->getHttpClient()->getResponse($request);
         
         $responseObject = json_decode($response->getBody());
@@ -135,7 +154,7 @@ class RunTest extends BaseTest {
      * @depends testReportTaskCompletion
      */    
     public function testGetPostCompleteTestStatus() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/status/');        
         $response = $this->getHttpClient()->getResponse($request);
         
         $responseObject = json_decode($response->getBody());
@@ -161,15 +180,15 @@ class RunTest extends BaseTest {
      * @depends testGetPostCompleteTestStatus
      */
     public function testStartAndCancelTest() { 
-        $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
+        $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
         $startResponseObject = json_decode($startResponse->getBody());
         $job_id = $startResponseObject->id;
         
-        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
+        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
         
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
         $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());
         
@@ -182,8 +201,9 @@ class RunTest extends BaseTest {
     
     public function testStartPrepareAndCancelTest() {
         // Start
-        $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
-        $startResponse = $this->getHttpClient()->getResponse($startRequest);        
+        $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
+        $startResponse = $this->getHttpClient()->getResponse($startRequest);
+
         $startResponseObject = json_decode($startResponse->getBody());
         $job_id = $startResponseObject->id;
         
@@ -191,11 +211,11 @@ class RunTest extends BaseTest {
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $job_id);
         
         // Cancel Job
-        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
+        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
         
         // Verify
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
         $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());        
         
@@ -212,7 +232,7 @@ class RunTest extends BaseTest {
         }
         
         // Verify
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
+        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
         $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
         $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());          
         
