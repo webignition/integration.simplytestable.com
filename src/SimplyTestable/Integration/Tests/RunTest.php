@@ -49,8 +49,6 @@ class RunTest extends BaseTest {
         
         $jobResponseObject = json_decode($jobResponse->getBody());
 
-var_dump($jobResponseObject);
-
         $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
         $this->assertInternalType('integer', $jobResponseObject->id);
         $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
@@ -58,6 +56,9 @@ var_dump($jobResponseObject);
         $this->assertEquals('queued', $jobResponseObject->state);
         $this->assertGreaterThan(0, $jobResponseObject->url_count);
         $this->assertGreaterThan(0, $jobResponseObject->task_count);
+        $this->assertNotNull($jobResponseObject->time_period);
+        $this->assertNotNull($jobResponseObject->time_period->start_date_time);
+        $this->assertTrue(!isset($jobResponseObject->time_period->end_date_time));
 
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -73,12 +74,6 @@ var_dump($jobResponseObject);
             $this->assertEquals('', $task->worker);
             $this->assertNotEquals('', $task->type);
         }
-
-exit();
-
-            $this->assertNotNull($task->time_period);
-            $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertNotNull($task->time_period->end_date_time);
     }
     
     
@@ -113,6 +108,9 @@ exit();
         $this->assertEquals('in-progress', $jobResponseObject->state);
         $this->assertGreaterThan(0, $jobResponseObject->url_count);
         $this->assertGreaterThan(0, $jobResponseObject->task_count);       
+        $this->assertNotNull($jobResponseObject->time_period);
+        $this->assertNotNull($jobResponseObject->time_period->start_date_time);
+        $this->assertTrue(!isset($jobResponseObject->time_period->end_date_time));
 
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -127,6 +125,9 @@ exit();
             $this->assertEquals('in-progress', $task->state);
             $this->assertNotEquals('', $task->worker);
             $this->assertNotEquals('', $task->type);
+            $this->assertNotNull($task->time_period);
+            $this->assertNotNull($task->time_period->start_date_time);
+            $this->assertTrue(!isset($task->time_period->end_date_time));
         }
     }
     
@@ -176,6 +177,9 @@ exit();
         $this->assertEquals('completed', $jobResponseObject->state);
         $this->assertGreaterThan(0, $jobResponseObject->url_count);
         $this->assertGreaterThan(0, $jobResponseObject->task_count);       
+        $this->assertNotNull($jobResponseObject->time_period);
+        $this->assertNotNull($jobResponseObject->time_period->start_date_time);
+        $this->assertNotNull($jobResponseObject->time_period->end_date_time);
 
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -190,10 +194,10 @@ exit();
             $this->assertEquals('completed', $task->state);
             $this->assertEquals('', $task->worker);
             $this->assertNotEquals('', $task->type);
-        }  
-
-
-exit();         
+            $this->assertNotNull($task->time_period);
+            $this->assertNotNull($task->time_period->start_date_time);
+            $this->assertNotNull($task->time_period->end_date_time);
+        }       
     }     
     
     /**
@@ -204,22 +208,31 @@ exit();
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
         $startResponseObject = json_decode($startResponse->getBody());
         $job_id = $startResponseObject->id;
-        
+
         $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
+
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
         
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
-        $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
-        $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());
+        $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'. $job_id . '/');        
+        $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
         
-        $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
-        $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
-        $this->assertNotNull($postCancelResponseObject->job->time_period->start_date_time);
-        $this->assertNotNull($postCancelResponseObject->job->time_period->end_date_time);  
+        $jobResponseObject = json_decode($jobResponse->getBody());
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
+        $this->assertInternalType('integer', $jobResponseObject->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $jobResponseObject->website);
+        $this->assertEquals('cancelled', $jobResponseObject->state);
+        $this->assertEquals(0, $jobResponseObject->url_count);
+        $this->assertEquals(0, $jobResponseObject->task_count);       
+        $this->assertNotNull($jobResponseObject->time_period);
+        $this->assertNotNull($jobResponseObject->time_period->start_date_time);
+        $this->assertNotNull($jobResponseObject->time_period->end_date_time);
     }
     
     
     public function testStartPrepareAndCancelTest() {
+/*
         // Start
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
@@ -262,7 +275,8 @@ exit();
             $this->assertNotNull($task->time_period);
             $this->assertNotNull($task->time_period->start_date_time);
             $this->assertNotNull($task->time_period->end_date_time);
-        }        
+        }  
+*/      
     }
       
 }
