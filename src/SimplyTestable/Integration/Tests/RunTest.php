@@ -31,7 +31,7 @@ class RunTest extends BaseTest {
         $this->assertEquals(self::TEST_CANONICAL_URL, $responseObject->website);
         $this->assertEquals('new', $responseObject->state);
         
-        self::$jobId = $responseObject->job->id;
+        self::$jobId = $responseObject->id;
     }
     
     
@@ -164,7 +164,7 @@ class RunTest extends BaseTest {
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
         $startResponseObject = json_decode($startResponse->getBody());
-        $job_id = $startResponseObject->job->id;
+        $job_id = $startResponseObject->id;
         
         $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
@@ -185,7 +185,7 @@ class RunTest extends BaseTest {
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/tests/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);        
         $startResponseObject = json_decode($startResponse->getBody());
-        $job_id = $startResponseObject->job->id;
+        $job_id = $startResponseObject->id;
         
         // Prepare
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $job_id);
