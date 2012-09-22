@@ -232,51 +232,59 @@ class RunTest extends BaseTest {
     
     
     public function testStartPrepareAndCancelTest() {
-/*
         // Start
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);
-
         $startResponseObject = json_decode($startResponse->getBody());
         $job_id = $startResponseObject->id;
-        
+
         // Prepare
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . $job_id);
-        
-        // Cancel Job
+
+        // Cancel
         $cancelRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/cancel/');
         $this->assertEquals(self::HTTP_STATUS_OK, $this->getHttpClient()->getResponse($cancelRequest)->getResponseCode());
+
+        // Verify        
+        $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'. $job_id . '/');        
+        $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
         
-        // Verify
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
-        $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
-        $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());        
+        $jobResponseObject = json_decode($jobResponse->getBody());
+
+        $this->assertEquals(self::HTTP_STATUS_OK, $jobResponse->getResponseCode());
+        $this->assertInternalType('integer', $jobResponseObject->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $jobResponseObject->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $jobResponseObject->website);
+        $this->assertEquals('cancelled', $jobResponseObject->state);
+        $this->assertGreaterThan(0, $jobResponseObject->url_count);
+        $this->assertGreaterThan(0, $jobResponseObject->task_count);     
+        $this->assertNotNull($jobResponseObject->time_period);
+        $this->assertNotNull($jobResponseObject->time_period->start_date_time);
+        $this->assertNotNull($jobResponseObject->time_period->end_date_time);
+
+        // Cancel tasks  
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        $this->assertEquals(self::HTTP_STATUS_OK, $postCancelStatusResponse->getResponseCode());
-        $this->assertEquals('cancelled', $postCancelResponseObject->job->state);    
-        $this->assertNotNull($postCancelResponseObject->job->time_period->start_date_time);
-        $this->assertNotNull($postCancelResponseObject->job->time_period->end_date_time);         
-        
-        $this->assertTrue(count($postCancelResponseObject->tasks) > 0);        
-        
-        // Cancel tasks        
-        foreach ($postCancelResponseObject->tasks as $task) {
+        $tasksResponseObject = json_decode($tasksResponse->getBody());
+      
+        foreach ($tasksResponseObject as $task) {
             $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:cancel ' . $task->id);         
         }
         
         // Verify
-        $postCancelStatusRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id.'/status/');
-        $postCancelStatusResponse = $this->getHttpClient()->getResponse($postCancelStatusRequest);
-        $postCancelResponseObject = json_decode($postCancelStatusResponse->getBody());          
+        $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.$job_id . '/tasks/');        
+        $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
         
-        foreach ($postCancelResponseObject->tasks as $task) {
+        $tasksResponseObject = json_decode($tasksResponse->getBody());        
+        
+        foreach ($tasksResponseObject as $task) {
             $this->assertEquals('cancelled', $task->state);
             $this->assertEquals('', $task->worker);
             $this->assertNotNull($task->time_period);
             $this->assertNotNull($task->time_period->start_date_time);
             $this->assertNotNull($task->time_period->end_date_time);
-        }  
-*/      
+       }     
     }
       
 }
