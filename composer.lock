@@ -2,22 +2,135 @@
     "hash": "48cf768c4385d0da7a479200bb62d0f9",
     "packages": [
         {
-            "package": "webignition/absolute-url-deriver",
+            "name": "webignition/absolute-url-deriver",
             "version": "dev-master",
-            "source-reference": "d84d6f74fe55429d4e19f7ede4d81fd3090738cc",
-            "commit-date": "1343344065"
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/absolute-url-deriver",
+                "reference": "d84d6f74fe55429d4e19f7ede4d81fd3090738cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/webignition/absolute-url-deriver/zipball/d84d6f74fe55429d4e19f7ede4d81fd3090738cc",
+                "reference": "d84d6f74fe55429d4e19f7ede4d81fd3090738cc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "webignition/url": ">=1.1"
+            },
+            "time": "2012-07-26 23:07:45",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net",
+                    "homepage": null,
+                    "role": null
+                }
+            ],
+            "description": "Derives an absolute URL from relative and source URLs",
+            "homepage": "https://github.com/webignition/absolute-url-deriver",
+            "keywords": [
+                "url",
+                "absolute"
+            ]
         },
         {
-            "package": "webignition/http-client",
+            "name": "webignition/http-client",
             "version": "dev-master",
-            "source-reference": "17d70c76703029ea0b318c727e930b3c772a32a5",
-            "commit-date": "1344029348"
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/http-client",
+                "reference": "1.2.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/webignition/http-client/archive/1.2.3.zip",
+                "reference": "1.2.3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "ext-http": "*",
+                "webignition/absolute-url-deriver": ">=1.1",
+                "webignition/url": ">1.0"
+            },
+            "time": "2012-10-30 12:15:58",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "HTTP Client with additional reliability over regular HTTP request sending to compensate for timeouts and redirects",
+            "homepage": "https://github.com/webignition/http-client",
+            "keywords": [
+                "http",
+                "client"
+            ]
         },
         {
-            "package": "webignition/url",
+            "name": "webignition/url",
             "version": "dev-master",
-            "source-reference": "1.1",
-            "commit-date": "1342614896"
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/url",
+                "reference": "1.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/webignition/url/archive/1.5.zip",
+                "reference": "1.5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "ext-intl": "*"
+            },
+            "time": "2012-11-12 14:01:08",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "Represents a URL, a library to be used in many other places. Applies semantically-lossless normalisation for comparisons.",
+            "homepage": "https://github.com/webignition/url",
+            "keywords": [
+                "url"
+            ]
         }
     ],
     "packages-dev": null,
