@@ -17,7 +17,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * 
      * @var array
      */
-    protected $environments = array(
+    protected static $environments = array(
         'ci.app.simplytestable.com' => '/www/ci.app.simplytestable.com',
         'hydrogen.ci.worker.simplytestable.com' => '/www/hydrogen.ci.worker.simplytestable.com',
         'lithium.ci.worker.simplytestable.com' => '/www/lithium.ci.worker.simplytestable.com'
@@ -29,7 +29,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * 
      * @var array
      */
-    protected $workers = array(
+    protected static $workers = array(
         'hydrogen.ci.worker.simplytestable.com',
         'lithium.ci.worker.simplytestable.com'
     );
@@ -39,7 +39,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      *
      * @var string
      */
-    protected $coreApplication = 'ci.app.simplytestable.com';
+    protected static $coreApplication = 'ci.app.simplytestable.com';
     
     
     /**
@@ -64,8 +64,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $environment
      * @param string $command 
      */
-    protected function runCommand($environment, $command) {
-        passthru('cd ' . $this->environments[$environment] . ' && ' . $command);
+    protected function runCommand($environment, $command) {        
+        passthru('cd ' . self::$environments[$environment] . ' && ' . $command);
     }
     
     
@@ -96,27 +96,27 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         return $this->httpClient;
     }  
     
-    protected function resetEnvironmentDatabases() {
-        $this->resetCoreApplicationDatabase();
-        $this->resetWorkerDatabases();
+    protected static function resetEnvironmentDatabases() {
+        self::resetCoreApplicationDatabase();
+        self::resetWorkerDatabases();
     }
     
 
-    protected function resetCoreApplicationDatabase() {    
-        $this->resetDatabase($this->coreApplication);
+    protected static function resetCoreApplicationDatabase() {    
+        self::resetDatabase(self::$coreApplication);
     }    
     
     
-    protected function resetWorkerDatabases() {
-        foreach ($this->workers as $environment) {
-            $this->resetDatabase($environment);
+    protected static function resetWorkerDatabases() {
+        foreach (self::$workers as $environment) {
+            self::resetDatabase($environment);
         }
     }    
     
-    private function resetDatabase($environment) {
-        $this->runSymfonyCommand($environment, 'doctrine:database:drop --force');
-        $this->runSymfonyCommand($environment, 'doctrine:database:create');
-        $this->runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');          
+    private static function resetDatabase($environment) {
+        self::runSymfonyCommand($environment, 'doctrine:database:drop --force');
+        self::runSymfonyCommand($environment, 'doctrine:database:create');
+        self::runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');          
     }
     
       
