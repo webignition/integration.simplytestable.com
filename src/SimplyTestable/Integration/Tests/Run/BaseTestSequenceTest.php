@@ -84,7 +84,7 @@ abstract class BaseTestSequenceTest extends BaseTest {
     
     
     protected function cancelJob() {
-        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.self::coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/cancel/');        
+        $cancelRequest = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId.'/cancel/');        
         $this->retrieveObjectViaHttp($cancelRequest);        
     }
     
