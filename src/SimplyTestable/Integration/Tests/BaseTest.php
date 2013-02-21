@@ -54,8 +54,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $environment
      * @param string $symfonyCommand 
      */
-    protected function runSymfonyCommand($environment, $symfonyCommand) {
-        $this->runCommand($environment, 'php app/console ' . $symfonyCommand);
+    protected static function runSymfonyCommand($environment, $symfonyCommand) {
+        self::runCommand($environment, 'php app/console ' . $symfonyCommand);
     }
     
     
@@ -64,7 +64,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $environment
      * @param string $command 
      */
-    protected function runCommand($environment, $command) {        
+    protected static function runCommand($environment, $command) {        
         passthru('cd ' . self::$environments[$environment] . ' && ' . $command);
     }
     
