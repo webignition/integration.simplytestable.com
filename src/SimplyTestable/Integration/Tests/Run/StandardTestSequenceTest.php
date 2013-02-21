@@ -35,7 +35,7 @@ class StandardTestSequenceTest extends BaseTest {
     
     public function testStart() {
         // Request job to be started
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
         $this->getHttpClient()->redirectHandler()->enable();
         $response = $this->getHttpClient()->getResponse($request);
         
@@ -59,7 +59,7 @@ class StandardTestSequenceTest extends BaseTest {
      */
     public function testPrepare() {
         // Request job to be prepared
-        $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . self::$jobId);                
+        $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:job:prepare ' . self::$jobId);                
         
         // Verify job state
         $job = $this->getJob();
@@ -97,7 +97,7 @@ class StandardTestSequenceTest extends BaseTest {
         // Assign each task out to the workers
         $preAssignmentTasks = $this->getTasks();
         foreach ($preAssignmentTasks as $task) {
-            $this->runSymfonyCommand($this->coreApplication, 'simplytestable:task:assign ' . $task->id);
+            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
         }
         
         // Verify job state
@@ -206,7 +206,7 @@ class StandardTestSequenceTest extends BaseTest {
      * @return stdClass
      */
     private function getJob() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
         return $this->retrieveObjectViaHttp($request);   
     }
     
@@ -217,7 +217,7 @@ class StandardTestSequenceTest extends BaseTest {
      * @return array
      */
     private function getTasks() {
-        $request = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         return $this->retrieveObjectViaHttp($request);          
     }
     
