@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\Integration\Tests;
 
-use webignition\Http\Client\Client;
+use SimplyTestable\Integration\Tests\BaseTest;
 
 
 class RunTest extends BaseTest {
