@@ -142,7 +142,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     
     
     protected static function clearEnvironmentLogs() {
-        foreach (self::environments as $environment => $path) {
+        foreach (self::$environments as $environment => $path) {
             self::runCommand($environment, 'rm -Rf app/logs/*.log');
         }        
     }     
