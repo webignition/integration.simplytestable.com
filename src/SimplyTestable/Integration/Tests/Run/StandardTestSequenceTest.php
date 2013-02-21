@@ -136,25 +136,10 @@ class StandardTestSequenceTest extends BaseTest {
      * @depends testAssignTasksToWorkers
      */
     public function testPerformTasks() { 
-        // Perform job tasks
         $prePerformTasks = $this->getTasks();
         foreach ($prePerformTasks as $task) {
             $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
-        }    
-        
-        // Verify state of all tasks
-        $postPerformTasks = $this->getTasks();
-        
-        foreach ($postPerformTasks as $task) {
-            $this->assertGreaterThan(0, $task->id);
-            $this->assertNotNull($task->url);
-            $this->assertEquals('completed', $task->state);
-            $this->assertNotEquals('', $task->worker);
-            $this->assertNotEquals('', $task->type);
-            $this->assertNotNull($task->time_period);
-            $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertTrue(!isset($task->time_period->end_date_time));
-        }         
+        }           
     }
     
     
