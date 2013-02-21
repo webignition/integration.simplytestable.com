@@ -2,8 +2,6 @@
 
 namespace SimplyTestable\Integration\Tests;
 
-use SimplyTestable\Integration\Tests\BaseTest;
-
 /**
  * Run through a standard test sequence:
  * 
@@ -13,24 +11,7 @@ use SimplyTestable\Integration\Tests\BaseTest;
  * - perform job tasks
  * 
  */
-class StandardTestSequenceTest extends BaseTest {
-    
-    /**
-     *
-     * @var int
-     */
-    private static $jobId;  
-    
-    
-    /**
-     *
-     * @var \HttpResponse
-     */
-    private static $lastHttpResponse = null;
-    
-    public static function setUpBeforeClass() {
-        self::resetTestEnvironment();
-    }
+class StandardTestSequenceTest extends BaseTestSequenceTest {
 
     
     public function testStart() {
@@ -59,7 +40,7 @@ class StandardTestSequenceTest extends BaseTest {
      */
     public function testPrepare() {
         // Request job to be prepared
-        $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:job:prepare ' . self::$jobId);                
+        $this->prepareJob();                
         
         // Verify job state
         $job = $this->getJob();
@@ -181,42 +162,6 @@ class StandardTestSequenceTest extends BaseTest {
             $this->assertNotNull($task->time_period->start_date_time);
             $this->assertNotNull($task->time_period->end_date_time);
         }         
-    }    
-    
-    
-    
-    /**
-     * Get current job properties
-     * 
-     * @return stdClass
-     */
-    private function getJob() {
-        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
-        return $this->retrieveObjectViaHttp($request);   
     }
-    
-    
-    /**
-     * Get collection of current job tasks
-     * 
-     * @return array
-     */
-    private function getTasks() {
-        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
-        return $this->retrieveObjectViaHttp($request);          
-    }
-    
-    
-    /**
-     * 
-     * @param \HttpRequest $request
-     * @return stdClass|array
-     */
-    private function retrieveObjectViaHttp(\HttpRequest $request) {
-        self::$lastHttpResponse = $this->getHttpClient()->getResponse($request);        
-        return json_decode(self::$lastHttpResponse->getBody());           
-    }
-    
-
       
 }
