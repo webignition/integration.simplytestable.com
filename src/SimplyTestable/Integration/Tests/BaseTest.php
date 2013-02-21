@@ -94,7 +94,14 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         }
         
         return $this->httpClient;
-    }  
+    }
+    
+    protected static function resetTestEnvironment() {
+        self::clearEnvironmentLogs();
+        self::resetEnvironmentDatabases();          
+        self::requestWorkerActivation();
+        self::verifyWorkerActivation();        
+    }
     
     protected static function resetEnvironmentDatabases() {
         self::resetCoreApplicationDatabase();
@@ -118,6 +125,27 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         self::runSymfonyCommand($environment, 'doctrine:database:create');
         self::runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');          
     }
+    
+    
+    protected static function requestWorkerActivation() {
+        foreach (self::$workers as $worker) {
+            self::runSymfonyCommand($worker, 'simplytestable:worker:activate');
+        }
+    }
+    
+    
+    protected static function verifyWorkerActivation() {
+        foreach (self::$workers as $workerIndex => $worker) {
+            self::runSymfonyCommand($this->coreApplication, 'simplytestable:worker:activate:verify ' . ($workerIndex + 1));
+        }        
+    }    
+    
+    
+    protected static function clearEnvironmentLogs() {
+        foreach (self::environments as $environment => $path) {
+            self::runCommand($environment, 'rm -Rf app/logs/*.log');
+        }        
+    }     
     
       
 }

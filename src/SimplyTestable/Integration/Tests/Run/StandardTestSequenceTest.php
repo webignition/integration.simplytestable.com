@@ -29,7 +29,7 @@ class StandardTestSequenceTest extends BaseTest {
     private static $lastHttpResponse = null;
     
     public static function setUpBeforeClass() {
-        self::resetEnvironmentDatabases();
+        self::resetTestEnvironment();
     }
 
     
