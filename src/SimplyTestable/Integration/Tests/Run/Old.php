@@ -5,7 +5,7 @@ namespace SimplyTestable\Integration\Tests;
 use SimplyTestable\Integration\Tests\BaseTest;
 
 
-class RunTest extends BaseTest {
+class Old extends BaseTest {
     
     /**
      *
@@ -33,16 +33,13 @@ class RunTest extends BaseTest {
     }
     
     
-    /**
-     * @depends testStartTest
-     */
+    
+
     public function testPrepareTest() {
         $this->runSymfonyCommand($this->coreApplication, 'simplytestable:job:prepare ' . self::$jobId);
     }
     
-    /**
-     * @depends testPrepareTest
-     */
+
     public function testGetPreAssignmentTestStatus() {
         $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
         $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
@@ -77,9 +74,7 @@ class RunTest extends BaseTest {
     }
     
     
-    /**
-     * @depends testGetPreAssignmentTestStatus
-     */
+
     public function testAssignTasksToWorkers() {        
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -92,9 +87,7 @@ class RunTest extends BaseTest {
     }
     
     
-    /**
-     * @depends testAssignTasksToWorkers
-     */
+
     public function testGetPostAssignmentTestStatus() {
         $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
         $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
@@ -131,9 +124,7 @@ class RunTest extends BaseTest {
         }
     }
     
-    /**
-     * @depends testGetPostAssignmentTestStatus
-     */
+
     public function testPerformTasks() {        
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -146,9 +137,7 @@ class RunTest extends BaseTest {
     }
     
 
-    /**
-     * @depends testPerformTasks
-     */
+
     public function testReportTaskCompletion() {
         $tasksRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/tasks/');        
         $tasksResponse = $this->getHttpClient()->getResponse($tasksRequest);
@@ -161,9 +150,7 @@ class RunTest extends BaseTest {
     }
     
     
-    /**
-     * @depends testReportTaskCompletion
-     */    
+   
     public function testGetPostCompleteTestStatus() {
         $jobRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/'.self::$jobId . '/');        
         $jobResponse = $this->getHttpClient()->getResponse($jobRequest);
@@ -200,9 +187,7 @@ class RunTest extends BaseTest {
         }       
     }     
     
-    /**
-     * @depends testGetPostCompleteTestStatus
-     */
+
     public function testStartAndCancelTest() { 
         $startRequest = $this->getAuthorisedHttpRequest('http://'.$this->coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
         $startResponse = $this->getHttpClient()->getResponse($startRequest);

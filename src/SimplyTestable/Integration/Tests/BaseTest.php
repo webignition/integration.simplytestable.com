@@ -94,7 +94,30 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         }
         
         return $this->httpClient;
+    }  
+    
+    protected function resetEnvironmentDatabases() {
+        $this->resetCoreApplicationDatabase();
+        $this->resetWorkerDatabases();
+    }
+    
+
+    protected function resetCoreApplicationDatabase() {    
+        $this->resetDatabase($this->coreApplication);
     }    
+    
+    
+    protected function resetWorkerDatabases() {
+        foreach ($this->workers as $environment) {
+            $this->resetDatabase($environment);
+        }
+    }    
+    
+    private function resetDatabase($environment) {
+        $this->runSymfonyCommand($environment, 'doctrine:database:drop --force');
+        $this->runSymfonyCommand($environment, 'doctrine:database:create');
+        $this->runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');          
+    }
     
       
 }
