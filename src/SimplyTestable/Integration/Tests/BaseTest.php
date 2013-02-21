@@ -136,7 +136,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     
     protected static function verifyWorkerActivation() {
         foreach (self::$workers as $workerIndex => $worker) {
-            self::runSymfonyCommand($this->coreApplication, 'simplytestable:worker:activate:verify ' . ($workerIndex + 1));
+            self::runSymfonyCommand(self::$coreApplication, 'simplytestable:worker:activate:verify ' . ($workerIndex + 1));
         }        
     }    
     
