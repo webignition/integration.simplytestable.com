@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\Integration\Tests;
+namespace SimplyTestable\Integration\Tests\Reset;
 
 use SimplyTestable\Integration\Tests\BaseTest;
 

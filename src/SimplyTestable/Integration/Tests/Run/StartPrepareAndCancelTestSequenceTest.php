@@ -1,6 +1,8 @@
 <?php
 
-namespace SimplyTestable\Integration\Tests;
+namespace SimplyTestable\Integration\Tests\Run;
+
+use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
 
 class StartPrepareAndCancelTestSequenceTest extends BaseTestSequenceTest {     
 

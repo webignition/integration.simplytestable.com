@@ -1,8 +1,8 @@
 <?php
 
-namespace SimplyTestable\Integration\Tests;
+namespace SimplyTestable\Integration\Tests\Run;
 
-use SimplyTestable\Integration\Tests\BaseTestSequenceTest;
+use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
 
 /**
  * Test that worker system state is restored when entering and then leaving
