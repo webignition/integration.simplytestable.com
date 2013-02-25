@@ -159,7 +159,21 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         foreach (self::$environments as $environment => $path) {
             self::runCommand($environment, 'rm -Rf app/logs/*.log');
         }        
-    }     
+    } 
+
+    protected static function startRedis() {
+        return shell_exec('sudo service redis-server start');
+    } 
+    
+    protected static function clearRedis() {
+        self::startRedis();
+        shell_exec('redis-cli -r 1 flushall');        
+    }
+    
+    
+    protected static function stopRedis() {
+        return shell_exec('sudo service redis-server stop');
+    }
     
       
 }

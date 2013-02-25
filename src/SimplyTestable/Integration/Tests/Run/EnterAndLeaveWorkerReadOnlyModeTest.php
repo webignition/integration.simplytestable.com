@@ -12,7 +12,7 @@ use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
  * - Assign first 10 tasks out to workers
  * - Enter worker read-only mode
  * - Try to perform task; see that tasks are not performed
- * - Leave read-only mode; see that tasks to be performed are requeued
+ * - Leave read-only mode; see that tasks to be performed are re-queued
  * - Perform tasks; see that tasks are correctly performed
  * - Enter worker read-only mode
  * - Try to report completion for tasks; see that completion reporting does not happen
@@ -91,9 +91,32 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
         foreach ($prePerformTasks as $task) {
             if ($task->id <= 10) {
                 $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
-                var_dump($result);
+                $this->assertEquals('Unable to perform task, worker application is in maintenance read-only mode', trim($result));
             }
         }         
+    }
+    
+    
+    /**
+     * @depends testPerformTaskWhenWorkersAreReadOnly
+     */    
+    public function testLeaveReadOnlyMode() {
+        self::clearRedis();
+        
+        foreach (self::$workers as $worker) {
+            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
+            $this->assertEquals(200, $response->getResponseCode());
+            
+            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+            $this->assertEquals(200, $statusResponse->getResponseCode());
+            
+            $workerStatus = json_decode($statusResponse->getBody());
+            $this->assertEquals('active', $workerStatus->state);
+        }
+        
+        
     }
     
     
