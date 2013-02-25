@@ -79,17 +79,21 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
             
             $workerStatus = json_decode($statusResponse->getBody());
             $this->assertEquals('maintenance-read-only', $workerStatus->state);
-        }
-        
-        
-        
-/**
-        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
-        $this->getHttpClient()->redirectHandler()->enable();
-        $response = $this->getHttpClient()->getResponse($request);
-        
-        $responseObject = json_decode($response->getBody()); 
- */        
+        }       
+    }
+    
+    
+    /**
+     * @depends testWorkerEnterReadOnly
+     */
+    public function testPerformTaskWhenWorkersAreReadOnly() {
+        $prePerformTasks = $this->getTasks();
+        foreach ($prePerformTasks as $task) {
+            if ($task->id <= 10) {
+                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+                var_dump($result);
+            }
+        }         
     }
     
     
