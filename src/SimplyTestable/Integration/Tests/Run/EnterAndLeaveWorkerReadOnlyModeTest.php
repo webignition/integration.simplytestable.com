@@ -103,10 +103,12 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testLeaveReadOnlyMode() {
         self::clearRedis();
         
-        foreach (self::$workers as $worker) {
-            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
-            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
-            $this->assertEquals(200, $response->getResponseCode());
+        foreach (self::$workers as $worker) {           
+            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
+            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());
+            
+            var_dump($adminMaintenanceLeaveReadOnlyResponse->getBody());
             
             $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
             $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
