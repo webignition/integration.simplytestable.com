@@ -4,7 +4,7 @@ namespace SimplyTestable\Integration\Tests;
 
 class StartAndCancelTestSequenceTest extends BaseTestSequenceTest {     
 
-    public function testStartPrepareAndCancelTest() { 
+    public function StartPrepareAndCancelTestSequenceTest() { 
         // Create, prepare then cancel job
         $this->startJob();
         $this->prepareJob();
