@@ -29,7 +29,7 @@ class StartPrepareAndCancelTestSequenceTest extends BaseTestSequenceTest {
         // Cancel tasks 
         $preCancellationTasks = $this->getTasks();      
         foreach ($preCancellationTasks as $task) {
-            self::runSymfonyCommand($this->coreApplication, 'simplytestable:task:cancel ' . $task->id);         
+            self::runSymfonyCommand(self::$coreApplication, 'simplytestable:task:cancel ' . $task->id);         
         }
         
         // Verify state of all tasks
