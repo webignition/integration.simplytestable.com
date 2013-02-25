@@ -29,7 +29,8 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
         $this->prepareJob();
         
         $preAssignmentTasks = $this->getTasks();
-        var_dump(count($preAssignmentTasks));
+        $tasksToAssign = array_slice($preAssignmentTasks, 0, 10);
+        var_dump(count($preAssignmentTasks), count($tasksToAssign));
 ////        foreach ($preAssignmentTasks as $task) {
 ////            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
 ////        }        
