@@ -9,7 +9,7 @@ use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
  * read-only mode.
  * 
  * - Start and prepare new job
- * - Assign some (? how many) tasks out to workers
+ * - Assign first 10 tasks out to workers
  * - Enter worker read-only mode
  * - Try to perform task; see that tasks are not performed
  * - Leave read-only mode; see that tasks to be performed are requeued
@@ -60,8 +60,36 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
             } else {
                 $this->assertEquals('queued', $task->state);
             }
-        }       
+        }
+    }
+    
+    
+    /**
+     * @depends testPrepareSequence
+     */
+    public function testWorkerEnterReadOnly() {
+        foreach (self::$workers as $worker) {
+            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enter-read-only/');
+            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
+            $this->assertEquals(200, $response->getResponseCode());
+            
+            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+            $this->assertEquals(200, $statusResponse->getResponseCode());
+            
+            $workerStatus = json_decode($statusResponse->getBody());
+            $this->assertEquals('maintenance-read-only', $workerStatus->state);
+        }
         
+        
+        
+/**
+        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
+        $this->getHttpClient()->redirectHandler()->enable();
+        $response = $this->getHttpClient()->getResponse($request);
+        
+        $responseObject = json_decode($response->getBody()); 
+ */        
     }
     
     

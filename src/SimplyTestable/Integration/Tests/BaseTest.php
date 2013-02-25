@@ -80,6 +80,20 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         ));
         
         return $httpRequest;
+    }      
+    
+    
+    /**
+     *
+     * @return \HttpRequest 
+     */
+    protected function getWorkerAdminHttpRequest($url = '', $request_method = HTTP_METH_GET, $options = array()) {
+        $httpRequest = new \HttpRequest($url, $request_method, $options);
+        $httpRequest->addHeaders(array(
+            'Authorization' => 'Basic ' . base64_encode('admin:adminpassword')
+        ));
+        
+        return $httpRequest;
     }  
     
     
