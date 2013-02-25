@@ -15,7 +15,8 @@
     },    
     "require": {
         "php": ">=5.3.0",
-        "webignition/http-client":"*"
+        "webignition/http-client":"*",
+        "glit/resque-bundle":"*"
     },
     "minimum-stability":"dev"
 }
