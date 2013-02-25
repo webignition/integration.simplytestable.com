@@ -1,42 +1,6 @@
 {
-    "hash": "1766e3261ba2f07d1bca1a926d0b878a",
+    "hash": "48cf768c4385d0da7a479200bb62d0f9",
     "packages": [
-        {
-            "name": "glit/resque",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/glit/php-resque.git",
-                "reference": "d677b0558d27e0c0405c3a54ce73b39db50b136f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/glit/php-resque/zipball/d677b0558d27e0c0405c3a54ce73b39db50b136f",
-                "reference": "d677b0558d27e0c0405c3a54ce73b39db50b136f",
-                "shasum": ""
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "Resque": "lib"
-                }
-            },
-            "notification-url": "http://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "William POTTIER",
-                    "email": "wpottier@allprogrammic.com"
-                }
-            ],
-            "description": "PHP port of the ruby resque library. And some enhancement to delegate instanciation of job (usefull to work with the Symfony2 DIC for exemple). ",
-            "keywords": [
-                "resque"
-            ],
-            "time": "2012-07-04 15:33:47"
-        },
         {
             "name": "webignition/absolute-url-deriver",
             "version": "dev-master",
@@ -171,7 +135,7 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "glit/resque": 20
-    }
+    "stability-flags": [
+
+    ]
 }
