@@ -54,22 +54,13 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
         
         $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
 
-        foreach ($postAssignmentTasks as $task) {
-            $this->assertGreaterThan(0, $task->id);
-            $this->assertNotNull($task->url);
-            
+        foreach ($postAssignmentTasks as $task) {            
             if ($task->id <= 10) {
                 $this->assertEquals('in-progress', $task->state);
             } else {
                 $this->assertEquals('queued', $task->state);
-            }            
-            
-            $this->assertNotEquals('', $task->worker);
-            $this->assertNotEquals('', $task->type);
-            $this->assertNotNull($task->time_period);
-            $this->assertNotNull($task->time_period->start_date_time);
-            $this->assertTrue(!isset($task->time_period->end_date_time));
-        }        
+            }
+        }       
         
     }
     
