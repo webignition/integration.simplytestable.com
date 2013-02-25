@@ -69,8 +69,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
      */
     public function testWorkerEnterReadOnly() {
         foreach (self::$workers as $worker) {
-            var_dump('http://'.$worker.'/maintenance/enter-read-only/');
-            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enter-read-only/');
+            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
             $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
             $this->assertEquals(200, $response->getResponseCode());
             
