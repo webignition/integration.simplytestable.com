@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\Integration\Tests;
 
+use SimplyTestable\Integration\Tests\BaseTestSequenceTest;
+
 /**
  * Test that worker system state is restored when entering and then leaving
  * read-only mode.
