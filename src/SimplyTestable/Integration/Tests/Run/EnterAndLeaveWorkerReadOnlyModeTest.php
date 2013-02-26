@@ -144,6 +144,38 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     }
     
     
+    /**
+     * @depends testPerformTasksAfterLeavingReadOnlyMode
+     */
+    public function testWorkerEnterReadOnlyAfterPerformingTasks() {
+        foreach (self::$workers as $worker) {
+            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
+            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
+            $this->assertEquals(200, $response->getResponseCode());
+            
+            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+            $this->assertEquals(200, $statusResponse->getResponseCode());
+            
+            $workerStatus = json_decode($statusResponse->getBody());
+            $this->assertEquals('maintenance-read-only', $workerStatus->state);
+        }       
+    }  
+    
+    
+    /**
+     * @depends testWorkerEnterReadOnlyAfterPerformingTasks
+     */
+    public function testReportTaskCompletionWhenWorkersAreReadOnly() {
+        $prePerformTasks = $this->getTasks();
+        foreach ($prePerformTasks as $task) {
+            if ($task->id <= 10) {
+                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+                $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
+            }
+        }         
+    }    
+    
     
     
 //    /**
