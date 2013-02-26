@@ -100,7 +100,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     /**
      * @depends testPerformTaskWhenWorkersAreReadOnly
      */    
-    public function testLeaveReadOnlyMode() {
+    public function testLeaveReadOnlyModeAfterPerformingTasks() {
         self::clearRedis();
         
         foreach (self::$workers as $workerIndex => $worker) {           
@@ -131,7 +131,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     
     
     /**
-     * @depends testLeaveReadOnlyMode
+     * @depends testLeaveReadOnlyModeAfterPerformingTasks
      */
     public function testPerformTasksAfterLeavingReadOnlyMode() {
         $tasks = $this->getTasks();
@@ -174,6 +174,40 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
                 $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
             }
         }         
+    } 
+    
+    /**
+     * @depends testReportTaskCompletionWhenWorkersAreReadOnly
+     */    
+    public function testLeaveReadOnlyModeAfterReportingTaskCompletion() {
+        self::clearRedis();
+        
+        foreach (self::$workers as $workerIndex => $worker) {           
+            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
+            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());         
+            
+            var_dump($adminMaintenanceLeaveReadOnlyResponse->getBody());
+            
+//            if ($workerIndex === 0) {
+//                $this->assertEquals(
+//                        '["0 completed tasks ready to be enqueued","10 queued tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]","Enqueuing task [5]","Enqueuing task [6]","Enqueuing task [7]","Enqueuing task [8]","Enqueuing task [9]","Enqueuing task [10]"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            } else {
+//                $this->assertEquals(
+//                        '["0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );                
+//            }            
+//            
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//            
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('active', $workerStatus->state);
+        }
     }    
     
     
