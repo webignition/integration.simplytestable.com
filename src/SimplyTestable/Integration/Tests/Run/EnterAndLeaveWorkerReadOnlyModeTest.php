@@ -136,8 +136,10 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testPerformTasksAfterLeavingReadOnlyMode() {
         $tasks = $this->getTasks();
         foreach ($tasks as $task) {
-            $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
-            var_dump($taskPerformOutput);
+            if ($task->id <= 10) {
+                $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+                $this->assertEquals('Performed ['.$task->remote_id.']', trim($taskPerformOutput));
+            }
         }          
     }
     
