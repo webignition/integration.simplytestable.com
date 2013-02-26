@@ -127,9 +127,21 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
             $workerStatus = json_decode($statusResponse->getBody());
             $this->assertEquals('active', $workerStatus->state);
         }
-        
-        
     }
+    
+    
+    /**
+     * @depends testLeaveReadOnlyMode
+     */
+    public function testPerformTasksAfterLeavingReadOnlyMode() {
+        $tasks = $this->getTasks();
+        foreach ($tasks as $task) {
+            $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+            var_dump($taskPerformOutput);
+        }          
+    }
+    
+    
     
     
 //    /**
