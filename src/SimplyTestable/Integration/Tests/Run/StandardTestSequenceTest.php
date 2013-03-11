@@ -9,9 +9,9 @@ use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
  * 
  * - start a new job
  * - prepare job
- * - assign tasks to workers
+ * - assign tasks to workers individually
  * - perform job tasks
- * 
+ * - report completion
  */
 class StandardTestSequenceTest extends BaseTestSequenceTest {
 
