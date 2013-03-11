@@ -108,7 +108,7 @@ class TaskCreateHydrogenReadOnly extends BaseTestSequenceTest {
         foreach ($postAssignmentTasks as $task) {            
             if ($task->id <= 10) {
                 $this->assertEquals('in-progress', $task->state);
-                $this->assertEquals('lithium.ci.worker.simplytestable.com', $task->state);
+                $this->assertEquals('lithium.ci.worker.simplytestable.com', $task->worker);
             } else {
                 $this->assertEquals('queued', $task->state);
             }
