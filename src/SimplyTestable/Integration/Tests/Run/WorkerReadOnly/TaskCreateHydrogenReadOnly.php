@@ -1,0 +1,310 @@
+<?php
+
+namespace SimplyTestable\Integration\Tests\Run\WorkerReadOnly;
+
+use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
+
+/**
+ * Test that worker system state is restored when entering and then leaving
+ * read-only mode.
+ * 
+ * - Start and prepare new job
+ * - Put hydrogen in read-only mode 
+ * - Assign first 10 tasks out to workers
+ */
+class TaskCreateHydrogenReadOnly extends BaseTestSequenceTest {
+    
+    private static $taskIdsAssignedToWorkers = array();
+
+    public function testPrepareSequence() {
+        $this->startJob();
+        $this->prepareJob();
+        
+//        $preAssignmentTasks = $this->getTasks();
+//        $tasksToAssign = array_slice($preAssignmentTasks, 0, 10);
+//
+//        foreach ($tasksToAssign as $task) {
+//            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
+//        }
+//        
+//        // Verify job state
+//        $job = $this->getJob();
+//        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+//        $this->assertEquals(self::$jobId, $job->id);
+//        $this->assertEquals(self::PUBLIC_USER_USERNAME, $job->user);
+//        $this->assertEquals(self::TEST_CANONICAL_URL, $job->website);
+//        $this->assertEquals('in-progress', $job->state);
+//        $this->assertGreaterThan(0, $job->url_count);
+//        $this->assertGreaterThan(0, $job->task_count);       
+//        $this->assertNotNull($job->time_period);
+//        $this->assertNotNull($job->time_period->start_date_time);
+//        $this->assertTrue(!isset($job->time_period->end_date_time));
+//        
+//        
+//        // Verify state of all tasks
+//        $postAssignmentTasks = $this->getTasks();       
+//        
+//        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+//
+//        foreach ($postAssignmentTasks as $task) {            
+//            if ($task->id <= 10) {
+//                $this->assertEquals('in-progress', $task->state);
+//            } else {
+//                $this->assertEquals('queued', $task->state);
+//            }
+//        }
+    }
+    
+    
+    /**
+     * @depends testPrepareSequence
+     */
+    public function testHydrogenWorkerEnterReadOnly() {
+        $worker = 'hydrogen.ci.worker.simplytestable.com';        
+
+        $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
+        $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
+        $this->assertEquals(200, $response->getResponseCode());
+
+        $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+        $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+        $this->assertEquals(200, $statusResponse->getResponseCode());
+
+        $workerStatus = json_decode($statusResponse->getBody());
+        $this->assertEquals('maintenance-read-only', $workerStatus->state);
+     
+    }
+    
+    /**
+     * @depends testHydrogenWorkerEnterReadOnly
+     */
+    public function testAssignTasksToWorkers() {
+        $preAssignmentTasks = $this->getTasks();
+        $tasksToAssign = array_slice($preAssignmentTasks, 0, 10);
+
+        foreach ($tasksToAssign as $task) {
+            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
+        }
+        
+        // Verify job state
+        $job = $this->getJob();
+        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+        $this->assertEquals(self::$jobId, $job->id);
+        $this->assertEquals(self::PUBLIC_USER_USERNAME, $job->user);
+        $this->assertEquals(self::TEST_CANONICAL_URL, $job->website);
+        $this->assertEquals('in-progress', $job->state);
+        $this->assertGreaterThan(0, $job->url_count);
+        $this->assertGreaterThan(0, $job->task_count);       
+        $this->assertNotNull($job->time_period);
+        $this->assertNotNull($job->time_period->start_date_time);
+        $this->assertTrue(!isset($job->time_period->end_date_time));
+        
+        
+        // Verify state of all tasks
+        $postAssignmentTasks = $this->getTasks();       
+        
+        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+
+        foreach ($postAssignmentTasks as $task) {            
+            if ($task->id <= 10) {
+                $this->assertEquals('in-progress', $task->state);
+                $this->assertEquals('lithium.ci.worker.simplytestable.com', $task->state);
+            } else {
+                $this->assertEquals('queued', $task->state);
+            }
+        } 
+        
+//        // Verify state of all tasks
+//        $postAssignmentTasks = $this->getTasks();       
+//        
+//        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+//
+//        foreach ($postAssignmentTasks as $task) {
+//            $this->assertGreaterThan(0, $task->id);
+//            $this->assertNotNull($task->url);
+//            $this->assertEquals('in-progress', $task->state);
+//            $this->assertNotEquals('', $task->worker);
+//            $this->assertNotEquals('', $task->type);
+//            $this->assertNotNull($task->time_period);
+//            $this->assertNotNull($task->time_period->start_date_time);
+//            $this->assertTrue(!isset($task->time_period->end_date_time));
+//        }         
+        
+//        // Assign each task out to the workers
+//        $preAssignmentTasks = $this->getTasks();
+//        foreach ($preAssignmentTasks as $task) {
+//            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
+//        }
+//        
+//        // Verify job state
+//        $job = $this->getJob();
+//        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+//        $this->assertEquals(self::$jobId, $job->id);
+//        $this->assertEquals(self::PUBLIC_USER_USERNAME, $job->user);
+//        $this->assertEquals(self::TEST_CANONICAL_URL, $job->website);
+//        $this->assertEquals('in-progress', $job->state);
+//        $this->assertGreaterThan(0, $job->url_count);
+//        $this->assertGreaterThan(0, $job->task_count);       
+//        $this->assertNotNull($job->time_period);
+//        $this->assertNotNull($job->time_period->start_date_time);
+//        $this->assertTrue(!isset($job->time_period->end_date_time));
+//        
+//        
+//        // Verify state of all tasks
+//        $postAssignmentTasks = $this->getTasks();       
+//        
+//        $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
+//
+//        foreach ($postAssignmentTasks as $task) {
+//            $this->assertGreaterThan(0, $task->id);
+//            $this->assertNotNull($task->url);
+//            $this->assertEquals('in-progress', $task->state);
+//            $this->assertNotEquals('', $task->worker);
+//            $this->assertNotEquals('', $task->type);
+//            $this->assertNotNull($task->time_period);
+//            $this->assertNotNull($task->time_period->start_date_time);
+//            $this->assertTrue(!isset($task->time_period->end_date_time));
+//        }        
+    }    
+    
+//    
+//    /**
+//     * @depends testWorkerEnterReadOnly
+//     */
+//    public function testPerformTaskWhenWorkersAreReadOnly() {
+//        $prePerformTasks = $this->getTasks();
+//        foreach ($prePerformTasks as $task) {
+//            if ($task->id <= 10) {
+//                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+//                $this->assertEquals('Unable to perform task, worker application is in maintenance read-only mode', trim($result));
+//            }
+//        }         
+//    }
+//    
+//    
+//    /**
+//     * @depends testPerformTaskWhenWorkersAreReadOnly
+//     */    
+//    public function testLeaveReadOnlyModeAfterPerformingTasks() {
+//        self::clearRedis();
+//        
+//        foreach (self::$workers as $workerIndex => $worker) {           
+//            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+//            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
+//            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());         
+//            
+//            if ($workerIndex === 0) {
+//                $this->assertEquals(
+//                        '["0 completed tasks ready to be enqueued","10 queued tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]","Enqueuing task [5]","Enqueuing task [6]","Enqueuing task [7]","Enqueuing task [8]","Enqueuing task [9]","Enqueuing task [10]"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            } else {
+//                $this->assertEquals(
+//                        '["0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );                
+//            }            
+//            
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//            
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('active', $workerStatus->state);
+//        }
+//    }
+//    
+//    
+//    /**
+//     * @depends testLeaveReadOnlyModeAfterPerformingTasks
+//     */
+//    public function testPerformTasksAfterLeavingReadOnlyMode() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+//                $this->assertEquals('Performed ['.$task->remote_id.']', trim($taskPerformOutput));
+//            }
+//        }          
+//    }
+//    
+//    
+//    /**
+//     * @depends testPerformTasksAfterLeavingReadOnlyMode
+//     */
+//    public function testWorkerEnterReadOnlyAfterPerformingTasks() {
+//        foreach (self::$workers as $worker) {
+//            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
+//            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
+//            $this->assertEquals(200, $response->getResponseCode());
+//            
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//            
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('maintenance-read-only', $workerStatus->state);
+//        }       
+//    }  
+//    
+//    
+//    /**
+//     * @depends testWorkerEnterReadOnlyAfterPerformingTasks
+//     */
+//    public function testReportTaskCompletionWhenWorkersAreReadOnly() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+//                $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
+//            }
+//        }         
+//    } 
+//    
+//    /**
+//     * @depends testReportTaskCompletionWhenWorkersAreReadOnly
+//     */    
+//    public function testLeaveReadOnlyModeAfterReportingTaskCompletion() {
+//        self::clearRedis();
+//        
+//        foreach (self::$workers as $workerIndex => $worker) {           
+//            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+//            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
+//            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());
+//            
+//            if ($workerIndex === 0) {
+//                $this->assertEquals(
+//                        '["10 completed tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]","Enqueuing task [5]","Enqueuing task [6]","Enqueuing task [7]","Enqueuing task [8]","Enqueuing task [9]","Enqueuing task [10]","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            } else {
+//                $this->assertEquals(
+//                        '["0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );                
+//            }            
+//            
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//            
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('active', $workerStatus->state);
+//        }
+//    }
+//    
+//    
+//    /**
+//     * @depends testLeaveReadOnlyModeAfterReportingTaskCompletion
+//     */
+//    public function testReportCompletionAfterLeavingReadOnlyMode() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+//                $this->assertEquals('Reported task completion ['.$task->remote_id.']', trim($result));
+//            }
+//        }          
+//    }
+      
+}
