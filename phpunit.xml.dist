@@ -16,6 +16,7 @@
     <testsuites>
         <testsuite name="Default Test Suite">
             <directory>src/SimplyTestable/Integration/Tests</directory>
+            <directory>src/SimplyTestable/Integration/Tests/Run</directory>
         </testsuite>
     </testsuites>
 
