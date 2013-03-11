@@ -1,6 +1,6 @@
 <?php
 
-namespace SimplyTestable\Integration\Tests\Run\WorkerReadOnly;
+namespace SimplyTestable\Integration\Tests\Run;
 
 use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
 
@@ -9,11 +9,11 @@ use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
  * read-only mode.
  * 
  * - Start and prepare new job
- * - Put lithium in read-only mode 
+ * - Put hydrogen in read-only mode 
  * - Assign first 10 tasks out to workers
- * - Verify tasks assigned to hydrogen
+ * - Verify tasks assigned to lithium
  */
-class TaskCreateLithiumnReadOnly extends BaseTestSequenceTest {
+class TaskCreateHydrogenReadOnly extends BaseTestSequenceTest {
 
     public function testPrepareSequence() {
         $this->startJob();
@@ -24,8 +24,8 @@ class TaskCreateLithiumnReadOnly extends BaseTestSequenceTest {
     /**
      * @depends testPrepareSequence
      */
-    public function testLithiumWorkerEnterReadOnly() {
-        $worker = 'lithium.ci.worker.simplytestable.com';        
+    public function testHydrogenWorkerEnterReadOnly() {
+        $worker = 'hydrogen.ci.worker.simplytestable.com';        
 
         $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
         $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
@@ -41,7 +41,7 @@ class TaskCreateLithiumnReadOnly extends BaseTestSequenceTest {
     }
     
     /**
-     * @depends testLithiumWorkerEnterReadOnly
+     * @depends testHydrogenWorkerEnterReadOnly
      */
     public function testAssignTasksToWorkers() {
         $preAssignmentTasks = $this->getTasks();
@@ -73,7 +73,7 @@ class TaskCreateLithiumnReadOnly extends BaseTestSequenceTest {
         foreach ($postAssignmentTasks as $task) {            
             if ($task->id <= 10) {
                 $this->assertEquals('in-progress', $task->state);
-                $this->assertEquals('hydrogen.ci.worker.simplytestable.com', $task->worker);
+                $this->assertEquals('lithium.ci.worker.simplytestable.com', $task->worker);
             } else {
                 $this->assertEquals('queued', $task->state);
             }
