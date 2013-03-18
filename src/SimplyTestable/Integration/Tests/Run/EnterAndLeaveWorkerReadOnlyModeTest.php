@@ -115,7 +115,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
                 );                
             } else {
                 $this->assertEquals(
-                        '["0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+                        '["Set state to active","0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
                         $adminMaintenanceLeaveReadOnlyResponse->getBody()
                 );                
             }            
