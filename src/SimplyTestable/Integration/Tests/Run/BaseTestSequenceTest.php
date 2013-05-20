@@ -64,7 +64,7 @@ abstract class BaseTestSequenceTest extends BaseTest {
     
     protected function startJob() {
         // Request job to be started
-        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/');        
+        $request = $this->getAuthorisedHttpRequest('http://'.self::$coreApplication.'/job/'.self::TEST_CANONICAL_URL.'/start/?type=single+URL');        
         $this->getHttpClient()->redirectHandler()->enable();
         $response = $this->getHttpClient()->getResponse($request);
         

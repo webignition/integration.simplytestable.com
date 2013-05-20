@@ -29,7 +29,7 @@ class StandardTestSequenceTest extends BaseTestSequenceTest {
         $this->assertInternalType('integer', $responseObject->id);
         $this->assertEquals(self::PUBLIC_USER_USERNAME, $responseObject->user);
         $this->assertEquals(self::TEST_CANONICAL_URL, $responseObject->website);
-        $this->assertEquals('new', $responseObject->state);
+        $this->assertEquals('queued', $responseObject->state);
         $this->assertEquals(0, $responseObject->url_count);
         $this->assertEquals(0, $responseObject->task_count);
         
