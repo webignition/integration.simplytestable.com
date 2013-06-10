@@ -125,6 +125,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
 
     protected static function resetCoreApplicationDatabase() {    
         self::resetDatabase(self::$coreApplication);
+        self::runSymfonyCommand(self::$coreApplication, 'php app/console doctrine:fixtures:load --append');
     }    
     
     
