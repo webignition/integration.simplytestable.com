@@ -64,8 +64,17 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $environment
      * @param string $command 
      */
-    protected static function runCommand($environment, $command) {        
-        return shell_exec('cd ' . self::$environments[$environment] . ' && ' . $command);
+    protected static function runCommand($environment, $command) { 
+        $fullCommand = 'cd ' . self::$environments[$environment] . ' && ' . $command;
+        
+        if (getenv('IS_JENKINS') === 'true') {
+            $fullCommand = 'export IS_JENKINS=true && ' . $fullCommand;
+        }        
+        
+        var_dump($fullCommand);
+        exit();
+        
+        return shell_exec($fullCommand);
     }
     
     
