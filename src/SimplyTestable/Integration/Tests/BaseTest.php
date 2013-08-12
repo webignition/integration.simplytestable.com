@@ -69,10 +69,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         
         if (getenv('IS_JENKINS') === 'true') {
             $fullCommand = 'export IS_JENKINS=true && ' . $fullCommand;
-        }        
-        
-        var_dump($fullCommand);
-        exit();
+        }
         
         return shell_exec($fullCommand);
     }
