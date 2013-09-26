@@ -125,7 +125,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
 
     protected static function resetCoreApplicationDatabase() {    
         self::resetDatabase(self::$coreApplication);
-        self::runSymfonyCommand(self::$coreApplication, 'doctrine:fixtures:load --append');
     }    
     
     
@@ -139,6 +138,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
         self::runSymfonyCommand($environment, 'doctrine:database:drop --force');
         self::runSymfonyCommand($environment, 'doctrine:database:create');
         self::runSymfonyCommand($environment, 'doctrine:migrations:migrate --no-interaction --quiet');          
+        self::runSymfonyCommand($environment, 'doctrine:fixtures:load --append');
     }
     
     
