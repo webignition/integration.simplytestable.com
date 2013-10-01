@@ -6,6 +6,8 @@ use SimplyTestable\Integration\Tests\BaseTest;
 
 abstract class BaseTestSequenceTest extends BaseTest {
     
+    const TASK_TYPE_COUNT = 4;
+    
     /**
      *
      * @var int
@@ -77,7 +79,7 @@ abstract class BaseTestSequenceTest extends BaseTest {
         $this->assertEquals(self::TEST_CANONICAL_URL, $responseObject->website);
         $this->assertEquals('queued', $responseObject->state);
         $this->assertEquals(1, $responseObject->url_count);
-        $this->assertEquals(3, $responseObject->task_count);
+        $this->assertEquals(self::TASK_TYPE_COUNT, $responseObject->task_count);
         
         self::$jobId = $responseObject->id;        
     }
