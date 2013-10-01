@@ -23,7 +23,7 @@ class StartAndCancelTestSequenceTest extends BaseTestSequenceTest {
         $this->assertEquals(self::TEST_CANONICAL_URL, $job->website);
         $this->assertEquals('cancelled', $job->state);
         $this->assertEquals(1, $job->url_count);
-        $this->assertEquals(3, $job->task_count);       
+        $this->assertEquals(self::TASK_TYPE_COUNT, $job->task_count);       
         $this->assertNotNull($job->time_period);
         $this->assertNotNull($job->time_period->start_date_time);
         $this->assertNotNull($job->time_period->end_date_time);
