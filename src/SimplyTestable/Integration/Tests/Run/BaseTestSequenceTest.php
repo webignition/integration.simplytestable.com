@@ -91,8 +91,12 @@ abstract class BaseTestSequenceTest extends BaseTest {
     }
     
     
+    protected function resolveJob() {
+        self::runSymfonyCommand(self::$coreApplication, 'simplytestable:job:resolve ' . self::$jobId);
+    }
+    
     protected function prepareJob() {
         self::runSymfonyCommand(self::$coreApplication, 'simplytestable:job:prepare ' . self::$jobId);
-    }
+    }    
     
 }

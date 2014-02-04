@@ -34,11 +34,24 @@ class StandardTestSequenceTest extends BaseTestSequenceTest {
         $this->assertEquals(self::TASK_TYPE_COUNT, $responseObject->task_count);
         
         self::$jobId = $responseObject->id;
-    }   
+    } 
     
     
     /**
      * @depends testStart
+     */
+    public function testResolve() {
+        $this->resolveJob();
+        
+        // Verify job state
+        $job = $this->getJob();
+        
+        $this->assertEquals('resolved', $job->state);
+    }    
+    
+    
+    /**
+     * @depends testResolve
      */
     public function testPrepare() {
         // Request job to be prepared

@@ -18,6 +18,7 @@ class TaskAssignCollectionSequenceTest extends BaseTestSequenceTest {
     public function testPrepareAndStartTest() {
         // Create, prepare then cancel job
         $this->startJob();
+        $this->resolveJob();
         $this->prepareJob();
     }
     

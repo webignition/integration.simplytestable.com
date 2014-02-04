@@ -17,6 +17,7 @@ class TaskCreateAssignSingleHydrogenReadOnly extends BaseTestSequenceTest {
 
     public function testPrepareSequence() {
         $this->startJob();
+        $this->resolveJob();
         $this->prepareJob();
     }
     

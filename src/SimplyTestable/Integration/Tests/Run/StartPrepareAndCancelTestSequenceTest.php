@@ -9,6 +9,7 @@ class StartPrepareAndCancelTestSequenceTest extends BaseTestSequenceTest {
     public function testPrepareAndStartPrepareAndCancelTest() { 
         // Create, prepare then cancel job
         $this->startJob();
+        $this->resolveJob();
         $this->prepareJob();
         $this->cancelJob();
 
