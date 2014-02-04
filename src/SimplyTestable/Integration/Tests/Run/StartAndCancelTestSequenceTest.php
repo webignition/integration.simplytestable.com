@@ -10,6 +10,7 @@ class StartAndCancelTestSequenceTest extends BaseTestSequenceTest {
     public function testStartAndCancelTest() { 
         // Create and then cancel job
         $this->startJob();
+        $this->resolveJob();
         $this->cancelJob();
 
         // Verify cancellation response
