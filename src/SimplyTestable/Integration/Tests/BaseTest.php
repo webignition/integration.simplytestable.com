@@ -55,7 +55,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $symfonyCommand 
      */
     protected static function runSymfonyCommand($environment, $symfonyCommand) {
-        return self::runCommand($environment, 'php app/console ' . $symfonyCommand);
+        return self::runCommand($environment, 'php app/console --env=prod ' . $symfonyCommand);
     }
     
     
