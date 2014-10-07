@@ -49,7 +49,7 @@ class TaskCreateAssignSingleHydrogenReadOnly extends BaseTestSequenceTest {
         $tasksToAssign = array_slice($preAssignmentTasks, 0, 10);
 
         foreach ($tasksToAssign as $task) {
-            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
+            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assigncollection ' . $task->id);
         }
         
         // Verify job state

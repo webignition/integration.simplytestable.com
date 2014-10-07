@@ -93,7 +93,7 @@ class StandardTestSequenceTest extends BaseTestSequenceTest {
         // Assign each task out to the workers
         $preAssignmentTasks = $this->getTasks();
         foreach ($preAssignmentTasks as $task) {
-            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assign ' . $task->id);
+            $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assigncollection ' . $task->id);
         }
         
         // Verify job state
