@@ -46,7 +46,7 @@ class StandardTestSequenceTest extends BaseTestSequenceTest {
         // Verify job state
         $job = $this->getJob();
         
-        $this->assertEquals('queued', $job->state);
+        $this->assertEquals('resolved', $job->state);
     }    
     
     
