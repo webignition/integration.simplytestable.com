@@ -139,7 +139,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testPerformTasksAfterLeavingReadOnlyMode() {
         $tasks = $this->getTasks();
         foreach ($tasks as $task) {
-            if ($task->id <= 10) {
+            if ($task->id <= self::TASK_COUNT) {
                 $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
                 $this->assertEquals('Performed ['.$task->remote_id.']', trim($taskPerformOutput));
             }
@@ -172,7 +172,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testReportTaskCompletionWhenWorkersAreReadOnly() {
         $tasks = $this->getTasks();
         foreach ($tasks as $task) {
-            if ($task->id <= 10) {
+            if ($task->id <= self::TASK_COUNT) {
                 $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
                 $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
             }
@@ -218,7 +218,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testReportCompletionAfterLeavingReadOnlyMode() {
         $tasks = $this->getTasks();
         foreach ($tasks as $task) {
-            if ($task->id <= 10) {
+            if ($task->id <= self::TASK_COUNT) {
                 $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
                 $this->assertEquals('Reported task completion ['.$task->remote_id.']', trim($result));
             }
