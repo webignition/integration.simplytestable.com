@@ -98,129 +98,129 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     }
     
     
-    /**
-     * @depends testPerformTaskWhenWorkersAreReadOnly
-     */    
-    public function testLeaveReadOnlyModeAfterPerformingTasks() {
-        self::clearRedis();
-        
-        foreach (self::$workers as $workerIndex => $worker) {           
-            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
-            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
-            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());         
-            
-            if ($workerIndex === 0) {
-                $this->assertEquals(
-                        '["Set state to active","0 completed tasks ready to be enqueued","4 queued tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]"]',
-                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
-                );             
-            } else {
-                $this->assertEquals(
-                        '["Set state to active","0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
-                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
-                );                
-            }            
-            
-            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
-            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
-            $this->assertEquals(200, $statusResponse->getResponseCode());
-            
-            $workerStatus = json_decode($statusResponse->getBody());
-            $this->assertEquals('active', $workerStatus->state);
-        }
-    }
-    
-    
-    /**
-     * @depends testLeaveReadOnlyModeAfterPerformingTasks
-     */
-    public function testPerformTasksAfterLeavingReadOnlyMode() {
-        $tasks = $this->getTasks();
-        foreach ($tasks as $task) {
-            if ($task->id <= 10) {
-                $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
-                $this->assertEquals('Performed ['.$task->remote_id.']', trim($taskPerformOutput));
-            }
-        }          
-    }
-    
-    
-    /**
-     * @depends testPerformTasksAfterLeavingReadOnlyMode
-     */
-    public function testWorkerEnterReadOnlyAfterPerformingTasks() {
-        foreach (self::$workers as $worker) {
-            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
-            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);            
-            $this->assertEquals(200, $response->getResponseCode());
-            
-            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
-            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
-            $this->assertEquals(200, $statusResponse->getResponseCode());
-            
-            $workerStatus = json_decode($statusResponse->getBody());
-            $this->assertEquals('maintenance-read-only', $workerStatus->state);
-        }       
-    }  
-    
-    
-    /**
-     * @depends testWorkerEnterReadOnlyAfterPerformingTasks
-     */
-    public function testReportTaskCompletionWhenWorkersAreReadOnly() {
-        $tasks = $this->getTasks();
-        foreach ($tasks as $task) {
-            if ($task->id <= 10) {
-                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
-                $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
-            }
-        }         
-    } 
-    
-    /**
-     * @depends testReportTaskCompletionWhenWorkersAreReadOnly
-     */    
-    public function testLeaveReadOnlyModeAfterReportingTaskCompletion() {
-        self::clearRedis();
-        
-        foreach (self::$workers as $workerIndex => $worker) {           
-            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
-            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);            
-            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());
-            
-            if ($workerIndex === 0) {
-                $this->assertEquals(
-                        '["Set state to active","4 completed tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]","0 queued tasks ready to be enqueued"]',
-                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
-                );                
-            } else {
-                $this->assertEquals(
-                        '["Set state to active","0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
-                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
-                );                
-            }            
-            
-            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
-            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
-            $this->assertEquals(200, $statusResponse->getResponseCode());
-            
-            $workerStatus = json_decode($statusResponse->getBody());
-            $this->assertEquals('active', $workerStatus->state);
-        }
-    }
-    
-    
-    /**
-     * @depends testLeaveReadOnlyModeAfterReportingTaskCompletion
-     */
-    public function testReportCompletionAfterLeavingReadOnlyMode() {
-        $tasks = $this->getTasks();
-        foreach ($tasks as $task) {
-            if ($task->id <= 10) {
-                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
-                $this->assertEquals('Reported task completion ['.$task->remote_id.']', trim($result));
-            }
-        }          
-    }
+//    /**
+//     * @depends testPerformTaskWhenWorkersAreReadOnly
+//     */
+//    public function testLeaveReadOnlyModeAfterPerformingTasks() {
+//        self::clearRedis();
+//
+//        foreach (self::$workers as $workerIndex => $worker) {
+//            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+//            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);
+//            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());
+//
+//            if ($workerIndex === 0) {
+//                $this->assertEquals(
+//                        '["Set state to active","0 completed tasks ready to be enqueued","4 queued tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            } else {
+//                $this->assertEquals(
+//                        '["Set state to active","0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            }
+//
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('active', $workerStatus->state);
+//        }
+//    }
+//
+//
+//    /**
+//     * @depends testLeaveReadOnlyModeAfterPerformingTasks
+//     */
+//    public function testPerformTasksAfterLeavingReadOnlyMode() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $taskPerformOutput = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
+//                $this->assertEquals('Performed ['.$task->remote_id.']', trim($taskPerformOutput));
+//            }
+//        }
+//    }
+//
+//
+//    /**
+//     * @depends testPerformTasksAfterLeavingReadOnlyMode
+//     */
+//    public function testWorkerEnterReadOnlyAfterPerformingTasks() {
+//        foreach (self::$workers as $worker) {
+//            $adminMaintenanceEnterReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/enable-read-only/');
+//            $response = $this->getHttpClient()->getResponse($adminMaintenanceEnterReadOnlyRequest);
+//            $this->assertEquals(200, $response->getResponseCode());
+//
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('maintenance-read-only', $workerStatus->state);
+//        }
+//    }
+//
+//
+//    /**
+//     * @depends testWorkerEnterReadOnlyAfterPerformingTasks
+//     */
+//    public function testReportTaskCompletionWhenWorkersAreReadOnly() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+//                $this->assertEquals('Unable to report completion, worker application is in maintenance read-only mode', trim($result));
+//            }
+//        }
+//    }
+//
+//    /**
+//     * @depends testReportTaskCompletionWhenWorkersAreReadOnly
+//     */
+//    public function testLeaveReadOnlyModeAfterReportingTaskCompletion() {
+//        self::clearRedis();
+//
+//        foreach (self::$workers as $workerIndex => $worker) {
+//            $adminMaintenanceLeaveReadOnlyRequest = $this->getWorkerAdminHttpRequest('http://'.$worker.'/maintenance/leave-read-only/');
+//            $adminMaintenanceLeaveReadOnlyResponse = $this->getHttpClient()->getResponse($adminMaintenanceLeaveReadOnlyRequest);
+//            $this->assertEquals(200, $adminMaintenanceLeaveReadOnlyResponse->getResponseCode());
+//
+//            if ($workerIndex === 0) {
+//                $this->assertEquals(
+//                        '["Set state to active","4 completed tasks ready to be enqueued","Enqueuing task [1]","Enqueuing task [2]","Enqueuing task [3]","Enqueuing task [4]","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            } else {
+//                $this->assertEquals(
+//                        '["Set state to active","0 completed tasks ready to be enqueued","0 queued tasks ready to be enqueued"]',
+//                        $adminMaintenanceLeaveReadOnlyResponse->getBody()
+//                );
+//            }
+//
+//            $workerStatusRequest = new \HttpRequest('http://'.$worker.'/status');
+//            $statusResponse = $this->getHttpClient()->getResponse($workerStatusRequest);
+//            $this->assertEquals(200, $statusResponse->getResponseCode());
+//
+//            $workerStatus = json_decode($statusResponse->getBody());
+//            $this->assertEquals('active', $workerStatus->state);
+//        }
+//    }
+//
+//
+//    /**
+//     * @depends testLeaveReadOnlyModeAfterReportingTaskCompletion
+//     */
+//    public function testReportCompletionAfterLeavingReadOnlyMode() {
+//        $tasks = $this->getTasks();
+//        foreach ($tasks as $task) {
+//            if ($task->id <= 10) {
+//                $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:reportcompletion ' . $task->remote_id);
+//                $this->assertEquals('Reported task completion ['.$task->remote_id.']', trim($result));
+//            }
+//        }
+//    }
       
 }
