@@ -21,6 +21,8 @@ use SimplyTestable\Integration\Tests\Run\BaseTestSequenceTest;
  * 
  */
 class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
+
+    const TASK_COUNT = 2;
     
     private static $taskIdsAssignedToWorkers = array();
 
@@ -30,7 +32,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
         $this->prepareJob();
         
         $preAssignmentTasks = $this->getTasks();
-        $tasksToAssign = array_slice($preAssignmentTasks, 0, 2);
+        $tasksToAssign = array_slice($preAssignmentTasks, 0, self::TASK_COUNT);
 
         foreach ($tasksToAssign as $task) {
             $this->runSymfonyCommand(self::$coreApplication, 'simplytestable:task:assigncollection ' . $task->id);
@@ -56,7 +58,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
         $this->assertEquals(self::HTTP_STATUS_OK, self::$lastHttpResponse->getResponseCode());
 
         foreach ($postAssignmentTasks as $task) {            
-            if ($task->id <= 2) {
+            if ($task->id <= self::TASK_COUNT) {
                 $this->assertEquals('in-progress', $task->state);
             } else {
                 $this->assertEquals('queued', $task->state);
@@ -90,7 +92,7 @@ class EnterAndLeaveWorkerReadOnlyModeTest extends BaseTestSequenceTest {
     public function testPerformTaskWhenWorkersAreReadOnly() {
         $prePerformTasks = $this->getTasks();
         foreach ($prePerformTasks as $task) {
-            if ($task->id <= 10) {
+            if ($task->id <= self::TASK_COUNT) {
                 $result = $this->runSymfonyCommand($task->worker, 'simplytestable:task:perform ' . $task->remote_id);
                 $this->assertEquals('Unable to perform task, worker application is in maintenance read-only mode', trim($result));
             }
